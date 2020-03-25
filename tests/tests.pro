@@ -1,13 +1,9 @@
-include(../defaults.pri)
-
+TEMPLATE = subdirs
+CONFIG += ordered
 QT -= qt core gui
+CONFIG += c++14
 
-CONFIG   -= app_bundle
-CONFIG += c++14 console
+SUBDIRS = \
+    unit_tests
 
-INCLUDEPATH += $$PWD
-
-LIBS += -L../src -lKitsunemimiArgs
-
-SOURCES += \
-    main.cpp
+tests.depends = src

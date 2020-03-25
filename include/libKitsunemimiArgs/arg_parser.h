@@ -12,6 +12,7 @@ class DataItem;
 class DataArray;
 namespace Args
 {
+class ArgParser_Test;
 
 class ArgParser
 {
@@ -47,6 +48,7 @@ public:
     const std::vector<bool> getBoolValues(const std::string &identifier);
 
 private:
+    friend ArgParser_Test;
 
     enum ArgType
     {

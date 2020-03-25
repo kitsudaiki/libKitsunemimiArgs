@@ -125,7 +125,8 @@ ArgParser::registerArgument(const std::string &identifier,
                             bool withoutFlag)
 {
     // precheck
-    if(identifier.size() == 0)
+    if(identifier.size() == 0
+            || identifier.at(0) == ',')
     {
         LOG_ERROR("No argument identifier was set");
         return false;
@@ -140,30 +141,49 @@ ArgParser::registerArgument(const std::string &identifier,
     // check splitting-result
     if(identifierList.size() > 2)
     {
-        LOG_ERROR("Argument identifier is long: " + identifier);
+        LOG_ERROR("argument identifier is long: " + identifier);
         return false;
     }
 
     // prepare long identifier
     if(identifierList.at(0).size() == 0)
     {
-        LOG_ERROR("Argument identifier is invalid: " + identifier);
+        LOG_ERROR("argument identifier is invalid: " + identifier);
         return false;
     }
-    if(withoutFlag) {
+    if(withoutFlag == false) {
         newArgument.longIdentifier = "--";
     }
+
     newArgument.longIdentifier += identifierList.at(0);
+
+    // check if already used
+    ArgParser::ArgIdentifier* findLong = getArgument(newArgument.longIdentifier);
+    if(findLong != nullptr)
+    {
+        LOG_ERROR("argument already in use: " + newArgument.longIdentifier);
+        return false;
+    }
 
     // prepare short identifier
     if(identifierList.size() == 2)
     {
-        if(newArgument.shortIdentifier.size() == 0)
+        // check length
+        if(identifierList.at(1).size() != 1)
         {
             LOG_ERROR("Argument identifier is invalid: " + identifier);
             return false;
         }
+
         newArgument.shortIdentifier = "-" + identifierList.at(1);
+
+        // check if already used
+        ArgParser::ArgIdentifier* findShort = getArgument(newArgument.shortIdentifier);
+        if(findShort != nullptr)
+        {
+            LOG_ERROR("argument already in use: " + newArgument.shortIdentifier);
+            return false;
+        }
     }
 
     // set other values
@@ -172,6 +192,8 @@ ArgParser::registerArgument(const std::string &identifier,
     newArgument.type = type;
     newArgument.helpText = helpText;
     newArgument.results = new DataArray();
+
+    m_argumentList.push_back(newArgument);
 
     return true;
 }
@@ -199,7 +221,7 @@ ArgParser::convertValue(const std::string &value,
 
         // convert to long-value
         const long longValue = std::strtol(charValue, &err, 10);
-        if(*err == 0) {
+        if(std::string(err).size() != 0) {
             return nullptr;
         }
 
@@ -214,7 +236,7 @@ ArgParser::convertValue(const std::string &value,
 
         // convert to double-value
         const double doubleValue = std::strtod(charValue, &err);
-        if(*err == 0) {
+        if(std::string(err).size() != 0) {
             return nullptr;
         }
 
