@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <climits>
+#include <cstdlib>
 
 namespace Kitsunemimi
 {
@@ -11,25 +13,32 @@ class DataArray;
 namespace Args
 {
 
-enum ArgType
-{
-    STRING_TYPE,
-    INT_TYPE,
-    FLOAT_TYPE,
-    BOOL_TYPE
-};
-
 class ArgParser
 {
 public:
     ArgParser();
+    ~ArgParser();
 
-    bool addArgument(const std::string &identifier,
-                     const std::string &helpText,
-                     const ArgType type,
-                     bool withoutFlag = false);
+    bool registerString(const std::string &identifier,
+                        const std::string &helpText,
+                        bool required = false,
+                        bool withoutFlag = false);
+    bool registerInteger(const std::string &identifier,
+                         const std::string &helpText,
+                         bool required = false,
+                         bool withoutFlag = false);
+    bool registerFloat(const std::string &identifier,
+                       const std::string &helpText,
+                       bool required = false,
+                       bool withoutFlag = false);
+    bool registerBoolean(const std::string &identifier,
+                         const std::string &helpText,
+                         bool required = false,
+                         bool withoutFlag = false);
 
-    bool parse(int argc, char* argv[]);
+    bool parse(int argc,
+               char* argv[],
+               std::string &errorMessage);
 
     uint64_t getNumberOfValues(const std::string &identifier);
     const std::vector<std::string> getStringValues(const std::string &identifier);
@@ -38,9 +47,19 @@ public:
     const std::vector<bool> getBoolValues(const std::string &identifier);
 
 private:
+
+    enum ArgType
+    {
+        STRING_TYPE,
+        INT_TYPE,
+        FLOAT_TYPE,
+        BOOL_TYPE
+    };
+
     struct ArgIdentifier
     {
         bool withoutFlag = false;
+        bool required = false;
         std::string longIdentifier = "";
         std::string shortIdentifier = "";
         ArgType type = STRING_TYPE;
@@ -49,9 +68,19 @@ private:
         DataArray* results = nullptr;
     };
 
-    std::vector<ArgIdentifier> argumentList;
+    uint32_t m_positionCounter = 0;
+    std::vector<ArgIdentifier> m_argumentList;
 
-    ArgIdentifier* getArg(const std::string &identifier);
+    ArgIdentifier* getArgument(const std::string &identifier);
+
+    bool registerArgument(const std::string &identifier,
+                          const std::string &helpText,
+                          const ArgType type,
+                          bool required,
+                          bool withoutFlag);
+
+    DataItem* convertValue(const std::string &value,
+                           const ArgType requiredType);
 };
 
 }

@@ -9,9 +9,104 @@ namespace Kitsunemimi
 namespace Args
 {
 
-ArgParser::ArgParser()
-{
+/**
+ * @brief constructor
+ */
+ArgParser::ArgParser() {}
 
+/**
+ * @brief destructor
+ */
+ArgParser::~ArgParser()
+{
+    for(uint32_t i = 0; i < m_argumentList.size(); i++)
+    {
+        delete m_argumentList[i].results;
+    }
+}
+
+/**
+ * @brief ArgParser::registerBoolean
+ * @param identifier
+ * @param helpText
+ * @param required
+ * @param withoutFlag
+ * @return
+ */
+bool
+ArgParser::registerString(const std::string &identifier,
+                          const std::string &helpText,
+                          bool required,
+                          bool withoutFlag)
+{
+    return registerArgument(identifier,
+                            helpText,
+                            ArgType::STRING_TYPE,
+                            required,
+                            withoutFlag);
+}
+
+/**
+ * @brief ArgParser::registerBoolean
+ * @param identifier
+ * @param helpText
+ * @param required
+ * @param withoutFlag
+ * @return
+ */
+bool
+ArgParser::registerInteger(const std::string &identifier,
+                           const std::string &helpText,
+                           bool required,
+                           bool withoutFlag)
+{
+    return registerArgument(identifier,
+                            helpText,
+                            ArgType::INT_TYPE,
+                            required,
+                            withoutFlag);
+}
+
+/**
+ * @brief ArgParser::registerBoolean
+ * @param identifier
+ * @param helpText
+ * @param required
+ * @param withoutFlag
+ * @return
+ */
+bool
+ArgParser::registerFloat(const std::string &identifier,
+                         const std::string &helpText,
+                         bool required,
+                         bool withoutFlag)
+{
+    return registerArgument(identifier,
+                            helpText,
+                            ArgType::FLOAT_TYPE,
+                            required,
+                            withoutFlag);
+}
+
+/**
+ * @brief ArgParser::registerBoolean
+ * @param identifier
+ * @param helpText
+ * @param required
+ * @param withoutFlag
+ * @return
+ */
+bool
+ArgParser::registerBoolean(const std::string &identifier,
+                           const std::string &helpText,
+                           bool required,
+                           bool withoutFlag)
+{
+    return registerArgument(identifier,
+                            helpText,
+                            ArgType::BOOL_TYPE,
+                            required,
+                            withoutFlag);
 }
 
 /**
@@ -23,10 +118,11 @@ ArgParser::ArgParser()
  * @return
  */
 bool
-ArgParser::addArgument(const std::string &identifier,
-                       const std::string &helpText,
-                       const ArgType type,
-                       bool withoutFlag)
+ArgParser::registerArgument(const std::string &identifier,
+                            const std::string &helpText,
+                            const ArgType type,
+                            bool required,
+                            bool withoutFlag)
 {
     // precheck
     if(identifier.size() == 0)
@@ -49,22 +145,30 @@ ArgParser::addArgument(const std::string &identifier,
     }
 
     // prepare long identifier
-    newArgument.longIdentifier = identifierList.at(0);
-    if(newArgument.longIdentifier.size() == 0) {
+    if(identifierList.at(0).size() == 0)
+    {
         LOG_ERROR("Argument identifier is invalid: " + identifier);
+        return false;
     }
+    if(withoutFlag) {
+        newArgument.longIdentifier = "--";
+    }
+    newArgument.longIdentifier += identifierList.at(0);
 
     // prepare short identifier
     if(identifierList.size() == 2)
     {
-        newArgument.shortIdentifier = identifierList.at(1);
-        if(newArgument.shortIdentifier.size() == 0) {
+        if(newArgument.shortIdentifier.size() == 0)
+        {
             LOG_ERROR("Argument identifier is invalid: " + identifier);
+            return false;
         }
+        newArgument.shortIdentifier = "-" + identifierList.at(1);
     }
 
     // set other values
     newArgument.withoutFlag = withoutFlag;
+    newArgument.required = required;
     newArgument.type = type;
     newArgument.helpText = helpText;
     newArgument.results = new DataArray();
@@ -73,15 +177,173 @@ ArgParser::addArgument(const std::string &identifier,
 }
 
 /**
+ * @brief ArgParser::convertValue
+ * @param value
+ * @param requiredType
+ * @return
+ */
+DataItem*
+ArgParser::convertValue(const std::string &value,
+                        const ArgParser::ArgType requiredType)
+{
+    // string value
+    if(requiredType == ArgType::STRING_TYPE) {
+        return new DataValue(value);
+    }
+
+    // long/int value
+    if(requiredType == ArgType::INT_TYPE)
+    {
+        char* err = nullptr;
+        const char* charValue = value.c_str();
+
+        // convert to long-value
+        const long longValue = std::strtol(charValue, &err, 10);
+        if(*err == 0) {
+            return nullptr;
+        }
+
+        return new DataValue(longValue);
+    }
+
+    // double/floag value
+    if(requiredType == ArgType::FLOAT_TYPE)
+    {
+        char* err = nullptr;
+        const char* charValue = value.c_str();
+
+        // convert to double-value
+        const double doubleValue = std::strtod(charValue, &err);
+        if(*err == 0) {
+            return nullptr;
+        }
+
+        return new DataValue(doubleValue);
+    }
+
+    // bool value
+    if(requiredType == ArgType::BOOL_TYPE)
+    {
+        // convert true
+        if(value == "true"
+                || value == "True"
+                || value == "1")
+        {
+            return new DataValue(true);
+        }
+
+        // convert false
+        if(value == "false"
+                || value == "False"
+                || value == "0")
+        {
+            return new DataValue(false);
+        }
+
+        // if nothing match, it is no boolean
+        return nullptr;
+    }
+
+    return nullptr;
+}
+
+/**
  * @brief ArgParser::parse
  * @param argc
  * @param argv
+ * @param errorMessage
  * @return
  */
 bool
-ArgParser::parse(int argc, char* argv[])
+ArgParser::parse(int argc,
+                 char* argv[],
+                 std::string &errorMessage)
 {
+    m_positionCounter = 0;
 
+    int i = 1;
+    while(i < argc)
+    {
+        const std::string currentArgument(argv[i]);
+
+        if(currentArgument.at(0) == '-')
+        {
+            // check identifier
+            ArgParser::ArgIdentifier* argIdent = getArgument(currentArgument);
+            if(argIdent == nullptr)
+            {
+                errorMessage = "unknown argument: " + currentArgument;
+                return false;
+            }
+
+            // check if there is a value for the identifier
+            if(i+i == argc)
+            {
+                errorMessage = "flag has no value: " + currentArgument;
+                return false;
+            }
+
+            // get value
+            const std::string currentValue(argv[i+1]);
+
+            // convert value
+            DataItem* convertedValue = convertValue(currentValue, argIdent->type);
+            if(convertedValue == nullptr)
+            {
+                errorMessage = "argument has the false type: " + currentArgument;
+                return false;
+            }
+
+            // add converted value to results
+            argIdent->results->append(convertedValue);
+
+            i += 2;
+        }
+        else
+        {
+            uint32_t counter = 0;
+            for(uint32_t i = 0; i < m_argumentList.size(); i++)
+            {
+                if(m_argumentList[i].withoutFlag == true)
+                {
+                    ArgParser::ArgIdentifier* argIdent = &m_argumentList[i];
+                    if(m_positionCounter == counter)
+                    {
+                        // convert value
+                        DataItem* convertedValue = convertValue(currentArgument, argIdent->type);
+                        if(convertedValue == nullptr)
+                        {
+                            errorMessage = "argument has the false type: " + currentArgument;
+                            return false;
+                        }
+
+                        // add converted value to results
+                        argIdent->results->append(convertedValue);
+
+                        m_positionCounter++;
+                    }
+
+                    counter++;
+                }
+            }
+
+            i += 1;
+        }
+    }
+
+    // check if all requirements are satisfied
+    for(uint32_t i = 0; i < m_argumentList.size(); i++)
+    {
+        if(m_argumentList[i].results->size() == 0
+                && m_argumentList[i].required)
+        {
+            errorMessage = "argument is required but was not set: "
+                         + m_argumentList[i].longIdentifier;
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
@@ -92,7 +354,7 @@ ArgParser::parse(int argc, char* argv[])
 uint64_t
 ArgParser::getNumberOfValues(const std::string &identifier)
 {
-    ArgParser::ArgIdentifier* arg = getArg(identifier);
+    ArgParser::ArgIdentifier* arg = getArgument(identifier);
     if(arg == nullptr) {
         return 0;
     }
@@ -110,7 +372,7 @@ ArgParser::getStringValues(const std::string &identifier)
 {
     std::vector<std::string> result;
 
-    ArgParser::ArgIdentifier* arg = getArg(identifier);
+    ArgParser::ArgIdentifier* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
@@ -136,7 +398,7 @@ ArgParser::getIntValues(const std::string &identifier)
 {
     std::vector<long> result;
 
-    ArgParser::ArgIdentifier* arg = getArg(identifier);
+    ArgParser::ArgIdentifier* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
@@ -162,7 +424,7 @@ ArgParser::getFloatValues(const std::string &identifier)
 {
     std::vector<double> result;
 
-    ArgParser::ArgIdentifier* arg = getArg(identifier);
+    ArgParser::ArgIdentifier* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
@@ -188,7 +450,7 @@ ArgParser::getBoolValues(const std::string &identifier)
 {
     std::vector<bool> result;
 
-    ArgParser::ArgIdentifier* arg = getArg(identifier);
+    ArgParser::ArgIdentifier* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
@@ -210,12 +472,14 @@ ArgParser::getBoolValues(const std::string &identifier)
  * @return
  */
 ArgParser::ArgIdentifier*
-ArgParser::getArg(const std::string &identifier)
+ArgParser::getArgument(const std::string &identifier)
 {
-    for(uint32_t i = 0; i < argumentList.size(); i++)
+    for(uint32_t i = 0; i < m_argumentList.size(); i++)
     {
-        if(argumentList.at(i).longIdentifier == identifier) {
-            return &argumentList.at(i);
+        if(m_argumentList.at(i).longIdentifier == identifier
+                || m_argumentList.at(i).shortIdentifier == identifier)
+        {
+            return &m_argumentList.at(i);
         }
     }
 
