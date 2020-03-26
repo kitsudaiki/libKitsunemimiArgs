@@ -232,7 +232,52 @@ ArgParser_Test::registerBoolean_test()
 void
 ArgParser_Test::parse_test()
 {
+    ArgParser parser;
+    std::string errorMessage = "";
 
+    int argc = 15;
+    const char* argv[15];
+    argv[0] = "-";
+    argv[1] = "--test";
+    argv[2] = "test1";
+    argv[3] = "--test";
+    argv[4] = "test2";
+    argv[5] = "--integer";
+    argv[6] = "1337";
+    argv[7] = "-f";
+    argv[8] = "123.5";
+    argv[9] = "-b";
+    argv[10] = "true";
+    argv[11] = "poi";
+    argv[12] = "42";
+    argv[13] = "42.25";
+    argv[14] = "false";
+
+    parser.registerString("test", " ");
+    parser.registerInteger("integer,i", " ");
+    parser.registerFloat("float,f", " ");
+    parser.registerBoolean("bool,b", " ");
+    parser.registerString("first_arg", "first argument", true, true);
+    parser.registerInteger("secondArg", "second argument", true, true);
+    parser.registerFloat("thirdArg", "third argument", true, true);
+    parser.registerBoolean("lastArg", "last argument", true, true);
+
+    TEST_EQUAL(parser.parse(argc, argv, errorMessage), true);
+    TEST_EQUAL(errorMessage, "");
+
+    // negative test: set argument `bool` to a non-bool value
+    argv[6] = "asdf";
+    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
+    argv[6] = "true";
+
+    // negative test: set a value without flag to a false type
+    argv[12] = "asdf";
+    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
+     argv[12] = "42";
+
+    // negative test: register a required value, which is not given in the arguments
+    parser.registerBoolean("fail", "this is a boolean", true);
+    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
 }
 
 /**
@@ -241,7 +286,12 @@ ArgParser_Test::parse_test()
 void
 ArgParser_Test::getNumberOfValues_test()
 {
+    ArgParser parser;
+    prepareTest(&parser);
 
+    TEST_EQUAL(parser.getNumberOfValues("test"), 2);
+    TEST_EQUAL(parser.getNumberOfValues("bool"), 1);
+    TEST_EQUAL(parser.getNumberOfValues("first_arg"), 1);
 }
 
 /**
@@ -250,7 +300,17 @@ ArgParser_Test::getNumberOfValues_test()
 void
 ArgParser_Test::getStringValues_test()
 {
+    ArgParser parser;
+    prepareTest(&parser);
 
+    const std::vector<std::string> ret = parser.getStringValues("test");
+    TEST_EQUAL(ret.size(), 2);
+    TEST_EQUAL(ret.at(0), "test1");
+    TEST_EQUAL(ret.at(1), "test2");
+
+    const std::vector<std::string> ret2 = parser.getStringValues("first_arg");
+    TEST_EQUAL(ret2.size(), 1);
+    TEST_EQUAL(ret2.at(0), "poi");
 }
 
 /**
@@ -259,7 +319,16 @@ ArgParser_Test::getStringValues_test()
 void
 ArgParser_Test::getIntValues_test()
 {
+    ArgParser parser;
+    prepareTest(&parser);
 
+    const std::vector<long> ret = parser.getIntValues("integer");
+    TEST_EQUAL(ret.size(), 1);
+    TEST_EQUAL(ret.at(0), 1337);
+
+    const std::vector<long> ret2 = parser.getIntValues("secondArg");
+    TEST_EQUAL(ret2.size(), 1);
+    TEST_EQUAL(ret2.at(0), 42);
 }
 
 /**
@@ -268,7 +337,16 @@ ArgParser_Test::getIntValues_test()
 void
 ArgParser_Test::getFloatValues_test()
 {
+    ArgParser parser;
+    prepareTest(&parser);
 
+    const std::vector<double> ret = parser.getFloatValues("f");
+    TEST_EQUAL(ret.size(), 1);
+    TEST_EQUAL(ret.at(0), 123.5);
+
+    const std::vector<double> ret2 = parser.getFloatValues("thirdArg");
+    TEST_EQUAL(ret2.size(), 1);
+    TEST_EQUAL(ret2.at(0), 42.25);
 }
 
 /**
@@ -277,7 +355,55 @@ ArgParser_Test::getFloatValues_test()
 void
 ArgParser_Test::getBoolValues_test()
 {
+    ArgParser parser;
+    prepareTest(&parser);
 
+    const std::vector<bool> ret = parser.getBoolValues("bool");
+    TEST_EQUAL(ret.size(), 1);
+    TEST_EQUAL(ret.at(0), true);
+
+    const std::vector<bool> ret2 = parser.getBoolValues("lastArg");
+    TEST_EQUAL(ret2.size(), 1);
+    TEST_EQUAL(ret2.at(0), false);
+}
+
+/**
+ * @brief ArgParser_Test::prepareTest
+ * @param parser
+ */
+void
+ArgParser_Test::prepareTest(ArgParser *parser)
+{
+    std::string errorMessage = "";
+
+    int argc = 15;
+    const char* argv[15];
+    argv[0] = "-";
+    argv[1] = "--test";
+    argv[2] = "test1";
+    argv[3] = "--test";
+    argv[4] = "test2";
+    argv[5] = "--integer";
+    argv[6] = "1337";
+    argv[7] = "-f";
+    argv[8] = "123.5";
+    argv[9] = "-b";
+    argv[10] = "true";
+    argv[11] = "poi";
+    argv[12] = "42";
+    argv[13] = "42.25";
+    argv[14] = "false";
+
+    parser->registerString("test", " ");
+    parser->registerInteger("integer,i", " ");
+    parser->registerFloat("float,f", " ");
+    parser->registerBoolean("bool,b", " ");
+    parser->registerString("first_arg", "first argument", true, true);
+    parser->registerInteger("secondArg", "second argument", true, true);
+    parser->registerFloat("thirdArg", "third argument", true, true);
+    parser->registerBoolean("lastArg", "last argument", true, true);
+
+    assert(parser->parse(argc, argv, errorMessage));
 }
 
 }

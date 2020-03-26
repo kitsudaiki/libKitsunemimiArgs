@@ -277,8 +277,8 @@ ArgParser::convertValue(const std::string &value,
  * @return
  */
 bool
-ArgParser::parse(int argc,
-                 char* argv[],
+ArgParser::parse(const int argc,
+                 const char* argv[],
                  std::string &errorMessage)
 {
     m_positionCounter = 0;
@@ -290,7 +290,7 @@ ArgParser::parse(int argc,
 
         if(currentArgument.at(0) == '-')
         {
-            // check identifier
+            // get and check identifier
             ArgParser::ArgIdentifier* argIdent = getArgument(currentArgument);
             if(argIdent == nullptr)
             {
@@ -324,11 +324,11 @@ ArgParser::parse(int argc,
         else
         {
             uint32_t counter = 0;
-            for(uint32_t i = 0; i < m_argumentList.size(); i++)
+            for(uint64_t j = 0; j < m_argumentList.size(); j++)
             {
-                if(m_argumentList[i].withoutFlag == true)
+                if(m_argumentList[j].withoutFlag == true)
                 {
-                    ArgParser::ArgIdentifier* argIdent = &m_argumentList[i];
+                    ArgParser::ArgIdentifier* argIdent = &m_argumentList[j];
                     if(m_positionCounter == counter)
                     {
                         // convert value
@@ -343,6 +343,7 @@ ArgParser::parse(int argc,
                         argIdent->results->append(convertedValue);
 
                         m_positionCounter++;
+                        j = m_argumentList.size();
                     }
 
                     counter++;
@@ -404,7 +405,7 @@ ArgParser::getStringValues(const std::string &identifier)
 
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
-        result.push_back(arg->results->getString());
+        result.push_back(arg->results->get(i)->getString());
     }
 
     return result;
@@ -430,7 +431,7 @@ ArgParser::getIntValues(const std::string &identifier)
 
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
-        result.push_back(arg->results->getLong());
+        result.push_back(arg->results->get(i)->getLong());
     }
 
     return result;
@@ -456,7 +457,7 @@ ArgParser::getFloatValues(const std::string &identifier)
 
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
-        result.push_back(arg->results->getDouble());
+        result.push_back(arg->results->get(i)->getDouble());
     }
 
     return result;
@@ -482,7 +483,7 @@ ArgParser::getBoolValues(const std::string &identifier)
 
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
-        result.push_back(arg->results->getBool());
+        result.push_back(arg->results->get(i)->getBool());
     }
 
     return result;
@@ -499,7 +500,9 @@ ArgParser::getArgument(const std::string &identifier)
     for(uint32_t i = 0; i < m_argumentList.size(); i++)
     {
         if(m_argumentList.at(i).longIdentifier == identifier
-                || m_argumentList.at(i).shortIdentifier == identifier)
+                || m_argumentList.at(i).shortIdentifier == identifier
+                || m_argumentList.at(i).longIdentifier == "--" + identifier
+                || m_argumentList.at(i).shortIdentifier == "-" + identifier)
         {
             return &m_argumentList.at(i);
         }

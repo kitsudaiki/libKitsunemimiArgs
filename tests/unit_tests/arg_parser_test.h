@@ -1,12 +1,14 @@
 #ifndef ARG_PARSER_TEST_H
 #define ARG_PARSER_TEST_H
 
+#include <assert.h>
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
 namespace Kitsunemimi
 {
 namespace Args
 {
+class ArgParser;
 
 class ArgParser_Test
         : public Kitsunemimi::CompareTestHelper
@@ -30,6 +32,9 @@ public:
     void getIntValues_test();
     void getFloatValues_test();
     void getBoolValues_test();
+
+private:
+    void prepareTest(ArgParser* parser);
 };
 
 }

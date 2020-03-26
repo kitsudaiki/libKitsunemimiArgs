@@ -37,8 +37,8 @@ public:
                          bool required = false,
                          bool withoutFlag = false);
 
-    bool parse(int argc,
-               char* argv[],
+    bool parse(const int argc,
+               const char* argv[],
                std::string &errorMessage);
 
     uint64_t getNumberOfValues(const std::string &identifier);
