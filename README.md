@@ -68,14 +68,17 @@ int main(int argc, char *argv[])
 
 	Kitsunemimi::Args::ArgParser parser;
 
+	// register flags
     parser.registerString("asdf", 
     	                  "optional test-flag");
     parser.registerInteger("test_integer,i", 
     	                   "optional int values for testing");
+
+   	// register other values 
     parser.registerString("first_arg", 
     	                  "first required argument", 
-    	                  true, 
-    	                  true);
+    	                  true,  // true to make it requried
+    	                  true); // true to register this without a "--"-flag
     parser.registerInteger("second_arg", 
     	                   "second requred argument", 
     	                   true, 
@@ -92,6 +95,13 @@ int main(int argc, char *argv[])
 	// ...
 
 	const std::vector<long> numbers = parser.getIntValues("test_integer");
+	// ...
+
+	const std::string testValues = parser.getStringValues("first_arg");
+	// ...
+
+	const long numbers = parser.getIntValues("second_arg");
+	// ...
 }
 
 ```
