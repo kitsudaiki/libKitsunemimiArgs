@@ -47,8 +47,8 @@ public:
                          bool withoutFlag = false);
 
     // parse
-    bool parse(const int argc,
-               const char* argv[]);
+    bool parse(const int argc, char *argv[]);
+    bool parse(const int argc, const char* argv[]);
 
     // getter
     uint64_t getNumberOfValues(const std::string &identifier);
@@ -88,8 +88,10 @@ private:
     uint32_t m_positionCounter = 0;
     std::vector<ArgDefinition> m_argumentList;
 
-    ArgDefinition* getArgument(const std::string &identifier);
+    const std::string convertType(ArgType type);
+    void print();
 
+    ArgDefinition* getArgument(const std::string &identifier);
     bool registerArgument(const std::string &identifier,
                           const std::string &helpText,
                           const ArgType type,

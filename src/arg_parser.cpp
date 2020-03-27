@@ -10,6 +10,8 @@
 
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
+#include <libKitsunemimiCommon/common_items/table_item.h>
+
 #include <libKitsunemimiPersistence/logger/logger.h>
 
 namespace Kitsunemimi
@@ -318,6 +320,21 @@ ArgParser::convertValue(const std::string &value,
  *
  * @param argc number of arguments
  * @param argv arguments
+ *
+ * @return false, if parsing failed
+ */
+bool
+ArgParser::parse(const int argc,
+                 char* argv[])
+{
+    return parse(argc, (const char**)argv);
+}
+
+/**
+ * @brief parse cli-arguments
+ *
+ * @param argc number of arguments
+ * @param argv arguments as const char
  *
  * @return false, if parsing failed
  */
@@ -639,7 +656,6 @@ ArgParser::getFloatValue(const std::string &identifier)
         return 0.0;
     }
 
-
     return arg->results->get(0)->getDouble();
 }
 
@@ -668,8 +684,98 @@ ArgParser::getBoolValue(const std::string &identifier)
         return false;
     }
 
-
     return arg->results->get(0)->getBool();
+}
+
+/**
+ * @brief ArgParser::convertType
+ * @param type
+ * @return
+ */
+const std::string
+ArgParser::convertType(ArgParser::ArgType type)
+{
+    if(type == ArgType::STRING_TYPE) {
+        return "string";
+    }
+    if(type == ArgType::INT_TYPE) {
+        return "number";
+    }
+    if(type == ArgType::FLOAT_TYPE) {
+        return "floating point";
+    }
+    if(type == ArgType::BOOL_TYPE) {
+        return "boolean";
+    }
+
+    return "";
+}
+
+/**
+ * @brief print arguments on cli
+ */
+void
+ArgParser::print()
+{
+    TableItem withFlags;
+    withFlags.addColumn("long identifier");
+    withFlags.addColumn("short identifier");
+    withFlags.addColumn("type");
+    withFlags.addColumn("is required");
+    withFlags.addColumn("text");
+
+    for(uint32_t i = 0; i < m_argumentList.size(); i++)
+    {
+        if(m_argumentList.at(i).withoutFlag == false)
+        {
+            // get type
+            const std::string type = convertType(m_argumentList.at(i).type);
+
+            // required flag
+            std::string required = "";
+            if(m_argumentList.at(i).required) {
+                required = "x";
+            }
+
+            // set row of table
+            withFlags.addRow(std::vector<std::string>{
+                m_argumentList.at(i).longIdentifier,
+                m_argumentList.at(i).shortIdentifier,
+                type,
+                required,
+                m_argumentList.at(i).helpText
+            });
+        }
+    }
+
+    std::cout<<"Arguments with flag:"<<std::endl;
+    std::cout<<withFlags.toString(200)<<std::endl;
+    std::cout<<"\n"<<std::endl;
+
+    TableItem withoutFlags;
+    withFlags.addColumn("name");
+    withFlags.addColumn("type");
+    withFlags.addColumn("text");
+
+    for(uint32_t i = 0; i < m_argumentList.size(); i++)
+    {
+        if(m_argumentList.at(i).withoutFlag == true)
+        {
+            // get type
+            const std::string type = convertType(m_argumentList.at(i).type);
+
+            // set row of table
+            withFlags.addRow(std::vector<std::string>{
+                "<" + m_argumentList.at(i).longIdentifier + ">",
+                type,
+                m_argumentList.at(i).helpText
+            });
+        }
+    }
+
+    std::cout<<"Arguments without flag:"<<std::endl;
+    std::cout<<withFlags.toString(200)<<std::endl;
+    std::cout<<"\n"<<std::endl;
 }
 
 /**

@@ -63,26 +63,26 @@ Tested on Debian and Ubuntu. If you use Centos, Arch, etc and the build-script f
 
 int main(int argc, char *argv[])
 {
-	// error messages of the parser are printed via logger
-	Kitsunemimi::Persistence::initLogger("/tmp", "testlog", true, true);
+    // error messages of the parser are printed via logger
+    Kitsunemimi::Persistence::initLogger("/tmp", "testlog", true, true);
 
-	Kitsunemimi::Args::ArgParser parser;
+    Kitsunemimi::Args::ArgParser parser;
 
-	// register flags
+    // register flags
     parser.registerString("asdf", 
-    	                  "optional test-flag");
+	                  "optional test-flag");
     parser.registerInteger("test_integer,i", 
-    	                   "optional int values for testing");
+	                   "optional int values for testing");
 
-   	// register other values 
+    // register other values 
     parser.registerString("first_arg", 
-    	                  "first required argument", 
-    	                  true,  // true to make it requried
-    	                  true); // true to register this without a "--"-flag
+                          "first required argument", 
+                          true,  // true to make it requried
+                          true); // true to register this without a "--"-flag
     parser.registerInteger("second_arg", 
-    	                   "second requred argument", 
-    	                   true, 
-    	                   true);
+                           "second requred argument", 
+                           true, 
+                           true);
     // register types:
     //     registerString
     //     registerInteger
@@ -91,17 +91,17 @@ int main(int argc, char *argv[])
 
     bool ret = parser.parse(argc, argv);
 
-	const std::vector<std::string> testValues = parser.getStringValues("asdf");
-	// ...
+    const std::vector<std::string> testValues = parser.getStringValues("asdf");
+    // ...
 
-	const std::vector<long> numbers = parser.getIntValues("test_integer");
-	// ...
+    const std::vector<long> numbers = parser.getIntValues("test_integer");
+    // ...
 
-	const std::string testValues = parser.getStringValues("first_arg");
-	// ...
+    const std::string testValue = parser.getStringValue("first_arg");
+    // ...
 
-	const long numbers = parser.getIntValues("second_arg");
-	// ...
+    const long number = parser.getIntValue("second_arg");
+    // ...
 }
 
 ```
