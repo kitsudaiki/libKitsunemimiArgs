@@ -46,38 +46,44 @@ ArgParser_Test::registerArgument_test()
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , false);
     TEST_EQUAL(parser.registerArgument("xyz,",
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , true);
     TEST_EQUAL(parser.registerArgument(",a",
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , false);
     TEST_EQUAL(parser.registerArgument("asdf,asdf",
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , false);
 
     TEST_EQUAL(parser.registerArgument("asdf,a",
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , true);
     TEST_EQUAL(parser.registerArgument("asdf,a",
                                        "this is an example",
                                        ArgParser::ArgType::INT_TYPE,
                                        true,
-                                       false)
+                                       false,
+                                       true)
                , false);
 }
 
@@ -94,7 +100,8 @@ ArgParser_Test::getArgument_test()
                             "this is an example",
                             ArgParser::ArgType::INT_TYPE,
                             true,
-                            false);
+                            false,
+                            true);
 
     isNullptr = parser.getArgument("xyz") == nullptr;
     TEST_EQUAL(isNullptr, true);

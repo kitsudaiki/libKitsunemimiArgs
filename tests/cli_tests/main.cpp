@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
 
     // register flags
     parser.registerString("asdf",
-                          "optional test-flag");
+                          "optional test-flag",
+                          true);
     parser.registerInteger("test_integer,i",
                            "optional int values for testing");
 

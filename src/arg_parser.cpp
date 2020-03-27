@@ -22,7 +22,11 @@ namespace Args
 /**
  * @brief constructor
  */
-ArgParser::ArgParser() {}
+ArgParser::ArgParser()
+{
+    // register the help-output as special case
+    registerPlain("help,h", "print help ouput");
+}
 
 /**
  * @brief destructor
@@ -33,6 +37,29 @@ ArgParser::~ArgParser()
     {
         delete m_argumentList[i].results;
     }
+}
+
+/**
+ * @brief register argument without value
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ *
+ * @return false, if identifier is already registered or broken, else true
+ */
+bool
+ArgParser::registerPlain(const std::string &identifier,
+                         const std::string &helpText)
+{
+    return registerArgument(identifier,
+                            helpText,
+                            ArgType::NO_TYPE,
+                            false,
+                            false,
+                            false);
 }
 
 /**
@@ -58,7 +85,8 @@ ArgParser::registerString(const std::string &identifier,
                             helpText,
                             ArgType::STRING_TYPE,
                             required,
-                            withoutFlag);
+                            withoutFlag,
+                            true);
 }
 
 /**
@@ -85,7 +113,8 @@ ArgParser::registerInteger(const std::string &identifier,
                             helpText,
                             ArgType::INT_TYPE,
                             required,
-                            withoutFlag);
+                            withoutFlag,
+                            true);
 }
 
 
@@ -113,7 +142,8 @@ ArgParser::registerFloat(const std::string &identifier,
                             helpText,
                             ArgType::FLOAT_TYPE,
                             required,
-                            withoutFlag);
+                            withoutFlag,
+                            true);
 }
 
 /**
@@ -140,7 +170,8 @@ ArgParser::registerBoolean(const std::string &identifier,
                             helpText,
                             ArgType::BOOL_TYPE,
                             required,
-                            withoutFlag);
+                            withoutFlag,
+                            true);
 }
 
 /**
@@ -163,7 +194,8 @@ ArgParser::registerArgument(const std::string &identifier,
                             const std::string &helpText,
                             const ArgType type,
                             bool required,
-                            bool withoutFlag)
+                            bool withoutFlag,
+                            bool hasValue)
 {
     // precheck
     if(identifier.size() == 0
@@ -229,6 +261,7 @@ ArgParser::registerArgument(const std::string &identifier,
 
     // set other values
     newArgument.required = required;
+    newArgument.hasValue = hasValue;
     newArgument.withoutFlag = withoutFlag;
     if(withoutFlag) {
         newArgument.required = true;
@@ -316,6 +349,34 @@ ArgParser::convertValue(const std::string &value,
 }
 
 /**
+ * @brief ArgParser::precheckForHelp
+ * @param argc
+ * @param argv
+ * @return
+ */
+bool
+ArgParser::precheckForHelp(const int argc,
+                           const char* argv[])
+{
+    const std::string programmPath(argv[0]);
+    std::vector<std::string> pathParts;
+    splitStringByDelimiter(pathParts, programmPath, '/');
+
+    for(int i = 1; i < argc; i++)
+    {
+        const std::string currentArgument(argv[i]);
+        if(currentArgument == "-h"
+                || currentArgument == "--help")
+        {
+            print(pathParts.at(pathParts.size()-1));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * @brief parse cli-arguments
  *
  * @param argc number of arguments
@@ -327,6 +388,7 @@ bool
 ArgParser::parse(const int argc,
                  char* argv[])
 {
+    // TODO: find better solution without warning
     return parse(argc, (const char**)argv);
 }
 
@@ -342,6 +404,10 @@ bool
 ArgParser::parse(const int argc,
                  const char* argv[])
 {
+    if(precheckForHelp(argc, argv)) {
+        return true;
+    }
+
     m_positionCounter = 0;
 
     int i = 1;
@@ -359,28 +425,37 @@ ArgParser::parse(const int argc,
                 return false;
             }
 
-            // check if there is a value for the identifier
-            if(i+i == argc)
+            if(argIdent->hasValue)
             {
-                LOG_ERROR("flag has no value: " + currentArgument);
-                return false;
+                // check if there is a value for the identifier
+                if(i+i == argc)
+                {
+                    LOG_ERROR("flag has no value: " + currentArgument);
+                    return false;
+                }
+
+                // get value
+                const std::string currentValue(argv[i+1]);
+
+                // convert value
+                DataItem* convertedValue = convertValue(currentValue, argIdent->type);
+                if(convertedValue == nullptr)
+                {
+                    LOG_ERROR("argument has the false type: " + currentArgument);
+                    return false;
+                }
+
+                // add converted value to results
+                argIdent->results->append(convertedValue);
+
+                i += 2;
+            }
+            else
+            {
+                i += 1;
             }
 
-            // get value
-            const std::string currentValue(argv[i+1]);
-
-            // convert value
-            DataItem* convertedValue = convertValue(currentValue, argIdent->type);
-            if(convertedValue == nullptr)
-            {
-                LOG_ERROR("argument has the false type: " + currentArgument);
-                return false;
-            }
-
-            // add converted value to results
-            argIdent->results->append(convertedValue);
-
-            i += 2;
+            argIdent->wasSet = true;
         }
         else
         {
@@ -445,6 +520,22 @@ ArgParser::getNumberOfValues(const std::string &identifier)
     }
 
     return arg->results->size();
+}
+
+/**
+ * @brief ArgParser::wasSet
+ * @param identifier
+ * @return
+ */
+bool
+ArgParser::wasSet(const std::string &identifier)
+{
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
+    if(arg == nullptr) {
+        return false;
+    }
+
+    return arg->wasSet;
 }
 
 /**
@@ -715,11 +806,14 @@ ArgParser::convertType(ArgParser::ArgType type)
  * @brief print arguments on cli
  */
 void
-ArgParser::print()
+ArgParser::print(const std::string &commandName)
 {
+    std::string commandString = commandName + " [options]";
+
+    // prepare table for arguments with flags
     TableItem withFlags;
-    withFlags.addColumn("long identifier");
-    withFlags.addColumn("short identifier");
+    withFlags.addColumn("long");
+    withFlags.addColumn("short");
     withFlags.addColumn("type");
     withFlags.addColumn("is required");
     withFlags.addColumn("text");
@@ -733,8 +827,10 @@ ArgParser::print()
 
             // required flag
             std::string required = "";
-            if(m_argumentList.at(i).required) {
+            if(m_argumentList.at(i).required)
+            {
                 required = "x";
+                commandString += " " + m_argumentList.at(i).longIdentifier + " ...";
             }
 
             // set row of table
@@ -748,14 +844,11 @@ ArgParser::print()
         }
     }
 
-    std::cout<<"Arguments with flag:"<<std::endl;
-    std::cout<<withFlags.toString(200)<<std::endl;
-    std::cout<<"\n"<<std::endl;
-
+    // prepare table for arguments without flags
     TableItem withoutFlags;
-    withFlags.addColumn("name");
-    withFlags.addColumn("type");
-    withFlags.addColumn("text");
+    withoutFlags.addColumn("name");
+    withoutFlags.addColumn("type");
+    withoutFlags.addColumn("text");
 
     for(uint32_t i = 0; i < m_argumentList.size(); i++)
     {
@@ -765,17 +858,22 @@ ArgParser::print()
             const std::string type = convertType(m_argumentList.at(i).type);
 
             // set row of table
-            withFlags.addRow(std::vector<std::string>{
+            withoutFlags.addRow(std::vector<std::string>{
                 "<" + m_argumentList.at(i).longIdentifier + ">",
                 type,
                 m_argumentList.at(i).helpText
             });
+
+            commandString += " <" + m_argumentList.at(i).longIdentifier + ">";
         }
     }
 
-    std::cout<<"Arguments without flag:"<<std::endl;
+    std::cout<<"command: "<<commandString<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<"Options:"<<std::endl;
     std::cout<<withFlags.toString(200)<<std::endl;
-    std::cout<<"\n"<<std::endl;
+    std::cout<<"Required:"<<std::endl;
+    std::cout<<withoutFlags.toString(200)<<std::endl;
 }
 
 /**
