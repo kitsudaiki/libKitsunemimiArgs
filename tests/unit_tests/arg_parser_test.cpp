@@ -100,7 +100,7 @@ ArgParser_Test::getArgument_test()
     isNullptr = parser.getArgument("-a") == nullptr;
     TEST_EQUAL(isNullptr, false);
 
-    ArgParser::ArgIdentifier* ret = parser.getArgument("-a");
+    ArgParser::ArgDefinition* ret = parser.getArgument("-a");
     TEST_EQUAL(ret->type, ArgParser::ArgType::INT_TYPE);
     TEST_EQUAL(ret->helpText, std::string("this is an example"));
     TEST_EQUAL(ret->required, true);
@@ -262,22 +262,21 @@ ArgParser_Test::parse_test()
     parser.registerFloat("thirdArg", "third argument", true, true);
     parser.registerBoolean("lastArg", "last argument", true, true);
 
-    TEST_EQUAL(parser.parse(argc, argv, errorMessage), true);
-    TEST_EQUAL(errorMessage, "");
+    TEST_EQUAL(parser.parse(argc, argv), true);
 
     // negative test: set argument `bool` to a non-bool value
     argv[6] = "asdf";
-    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
+    TEST_EQUAL(parser.parse(argc, argv), false);
     argv[6] = "true";
 
     // negative test: set a value without flag to a false type
     argv[12] = "asdf";
-    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
+    TEST_EQUAL(parser.parse(argc, argv), false);
      argv[12] = "42";
 
     // negative test: register a required value, which is not given in the arguments
     parser.registerBoolean("fail", "this is a boolean", true);
-    TEST_EQUAL(parser.parse(argc, argv, errorMessage), false);
+    TEST_EQUAL(parser.parse(argc, argv), false);
 }
 
 /**
@@ -403,7 +402,7 @@ ArgParser_Test::prepareTest(ArgParser *parser)
     parser->registerFloat("thirdArg", "third argument", true, true);
     parser->registerBoolean("lastArg", "last argument", true, true);
 
-    assert(parser->parse(argc, argv, errorMessage));
+    assert(parser->parse(argc, argv));
 }
 
 }

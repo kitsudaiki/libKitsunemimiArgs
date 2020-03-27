@@ -1,3 +1,11 @@
+/**
+ *  @file       arg_parser.h
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #ifndef ARG_PARSER_H
 #define ARG_PARSER_H
 
@@ -20,6 +28,7 @@ public:
     ArgParser();
     ~ArgParser();
 
+    // register
     bool registerString(const std::string &identifier,
                         const std::string &helpText,
                         bool required = false,
@@ -37,10 +46,11 @@ public:
                          bool required = false,
                          bool withoutFlag = false);
 
+    // parse
     bool parse(const int argc,
-               const char* argv[],
-               std::string &errorMessage);
+               const char* argv[]);
 
+    // getter
     uint64_t getNumberOfValues(const std::string &identifier);
     const std::vector<std::string> getStringValues(const std::string &identifier);
     const std::vector<long> getIntValues(const std::string &identifier);
@@ -58,7 +68,7 @@ private:
         BOOL_TYPE
     };
 
-    struct ArgIdentifier
+    struct ArgDefinition
     {
         bool withoutFlag = false;
         bool required = false;
@@ -71,9 +81,9 @@ private:
     };
 
     uint32_t m_positionCounter = 0;
-    std::vector<ArgIdentifier> m_argumentList;
+    std::vector<ArgDefinition> m_argumentList;
 
-    ArgIdentifier* getArgument(const std::string &identifier);
+    ArgDefinition* getArgument(const std::string &identifier);
 
     bool registerArgument(const std::string &identifier,
                           const std::string &helpText,

@@ -1,3 +1,11 @@
+/**
+ *  @file       arg_parser.cpp
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #include <libKitsunemimiArgs/arg_parser.h>
 
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
@@ -26,12 +34,17 @@ ArgParser::~ArgParser()
 }
 
 /**
- * @brief ArgParser::registerBoolean
- * @param identifier
- * @param helpText
- * @param required
- * @param withoutFlag
- * @return
+ * @brief register string-value
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ * @param required true, to make the argument required, fals to make it optional
+ * @param withoutFlag true, the handle the identifier as flag for the value
+ *
+ * @return false, if identifier is already registered or broken, else true
  */
 bool
 ArgParser::registerString(const std::string &identifier,
@@ -47,12 +60,17 @@ ArgParser::registerString(const std::string &identifier,
 }
 
 /**
- * @brief ArgParser::registerBoolean
- * @param identifier
- * @param helpText
- * @param required
- * @param withoutFlag
- * @return
+ * @brief register int/long value
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ * @param required true, to make the argument required, fals to make it optional
+ * @param withoutFlag true, the handle the identifier as flag for the value
+ *
+ * @return false, if identifier is already registered or broken, else true
  */
 bool
 ArgParser::registerInteger(const std::string &identifier,
@@ -67,13 +85,19 @@ ArgParser::registerInteger(const std::string &identifier,
                             withoutFlag);
 }
 
+
 /**
- * @brief ArgParser::registerBoolean
- * @param identifier
- * @param helpText
- * @param required
- * @param withoutFlag
- * @return
+ * @brief register float/double value
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ * @param required true, to make the argument required, fals to make it optional
+ * @param withoutFlag true, the handle the identifier as flag for the value
+ *
+ * @return false, if identifier is already registered or broken, else true
  */
 bool
 ArgParser::registerFloat(const std::string &identifier,
@@ -89,12 +113,17 @@ ArgParser::registerFloat(const std::string &identifier,
 }
 
 /**
- * @brief ArgParser::registerBoolean
- * @param identifier
- * @param helpText
- * @param required
- * @param withoutFlag
- * @return
+ * @brief register bool value
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ * @param required true, to make the argument required, fals to make it optional
+ * @param withoutFlag true, the handle the identifier as flag for the value
+ *
+ * @return false, if identifier is already registered or broken, else true
  */
 bool
 ArgParser::registerBoolean(const std::string &identifier,
@@ -110,12 +139,18 @@ ArgParser::registerBoolean(const std::string &identifier,
 }
 
 /**
- * @brief ArgParser::addArgument
- * @param identifier
- * @param helpText
- * @param type
- * @param withoutFlag
- * @return
+ * @brief register ne argument
+ *
+ * @param identifier Identifier for the new argument. Its a single word like "flag" for defining
+ *                   only a long identifier like "--flag" or a comma-separated pair like "flag,f"
+ *                   to define a long identifier like "--flag" together with a short identifier
+ *                   like "-f"
+ * @param helpText help-text for the argument for user-output
+ * @param type type identifier
+ * @param required true, to make the argument required, fals to make it optional
+ * @param withoutFlag true, the handle the identifier as flag for the value
+ *
+ * @return false, if identifier is already registered or broken, else true
  */
 bool
 ArgParser::registerArgument(const std::string &identifier,
@@ -132,7 +167,7 @@ ArgParser::registerArgument(const std::string &identifier,
         return false;
     }
 
-    ArgIdentifier newArgument;
+    ArgDefinition newArgument;
 
     // split identifier-string
     std::vector<std::string> identifierList;
@@ -158,7 +193,7 @@ ArgParser::registerArgument(const std::string &identifier,
     newArgument.longIdentifier += identifierList.at(0);
 
     // check if already used
-    ArgParser::ArgIdentifier* findLong = getArgument(newArgument.longIdentifier);
+    ArgParser::ArgDefinition* findLong = getArgument(newArgument.longIdentifier);
     if(findLong != nullptr)
     {
         LOG_ERROR("argument already in use: " + newArgument.longIdentifier);
@@ -178,7 +213,7 @@ ArgParser::registerArgument(const std::string &identifier,
         newArgument.shortIdentifier = "-" + identifierList.at(1);
 
         // check if already used
-        ArgParser::ArgIdentifier* findShort = getArgument(newArgument.shortIdentifier);
+        ArgParser::ArgDefinition* findShort = getArgument(newArgument.shortIdentifier);
         if(findShort != nullptr)
         {
             LOG_ERROR("argument already in use: " + newArgument.shortIdentifier);
@@ -199,10 +234,12 @@ ArgParser::registerArgument(const std::string &identifier,
 }
 
 /**
- * @brief ArgParser::convertValue
- * @param value
- * @param requiredType
- * @return
+ * @brief convert argument-values
+ *
+ * @param value string-value
+ * @param requiredType required type for the argument
+ *
+ * @return nullptr, if converting failed, else data-item with the converted value
  */
 DataItem*
 ArgParser::convertValue(const std::string &value,
@@ -270,16 +307,16 @@ ArgParser::convertValue(const std::string &value,
 }
 
 /**
- * @brief ArgParser::parse
- * @param argc
- * @param argv
- * @param errorMessage
- * @return
+ * @brief parse cli-arguments
+ *
+ * @param argc number of arguments
+ * @param argv arguments
+ *
+ * @return false, if parsing failed
  */
 bool
 ArgParser::parse(const int argc,
-                 const char* argv[],
-                 std::string &errorMessage)
+                 const char* argv[])
 {
     m_positionCounter = 0;
 
@@ -291,17 +328,17 @@ ArgParser::parse(const int argc,
         if(currentArgument.at(0) == '-')
         {
             // get and check identifier
-            ArgParser::ArgIdentifier* argIdent = getArgument(currentArgument);
+            ArgParser::ArgDefinition* argIdent = getArgument(currentArgument);
             if(argIdent == nullptr)
             {
-                errorMessage = "unknown argument: " + currentArgument;
+                LOG_ERROR("unknown argument: " + currentArgument);
                 return false;
             }
 
             // check if there is a value for the identifier
             if(i+i == argc)
             {
-                errorMessage = "flag has no value: " + currentArgument;
+                LOG_ERROR("flag has no value: " + currentArgument);
                 return false;
             }
 
@@ -312,7 +349,7 @@ ArgParser::parse(const int argc,
             DataItem* convertedValue = convertValue(currentValue, argIdent->type);
             if(convertedValue == nullptr)
             {
-                errorMessage = "argument has the false type: " + currentArgument;
+                LOG_ERROR("argument has the false type: " + currentArgument);
                 return false;
             }
 
@@ -328,20 +365,21 @@ ArgParser::parse(const int argc,
             {
                 if(m_argumentList[j].withoutFlag == true)
                 {
-                    ArgParser::ArgIdentifier* argIdent = &m_argumentList[j];
+                    ArgParser::ArgDefinition* argIdent = &m_argumentList[j];
                     if(m_positionCounter == counter)
                     {
                         // convert value
                         DataItem* convertedValue = convertValue(currentArgument, argIdent->type);
                         if(convertedValue == nullptr)
                         {
-                            errorMessage = "argument has the false type: " + currentArgument;
+                            LOG_ERROR("argument has the false type: " + currentArgument);
                             return false;
                         }
 
                         // add converted value to results
                         argIdent->results->append(convertedValue);
 
+                        // update counter
                         m_positionCounter++;
                         j = m_argumentList.size();
                     }
@@ -360,8 +398,8 @@ ArgParser::parse(const int argc,
         if(m_argumentList[i].results->size() == 0
                 && m_argumentList[i].required)
         {
-            errorMessage = "argument is required but was not set: "
-                         + m_argumentList[i].longIdentifier;
+            LOG_ERROR("argument is required but was not set: "
+                      + m_argumentList[i].longIdentifier);
             return false;
         }
     }
@@ -377,7 +415,7 @@ ArgParser::parse(const int argc,
 uint64_t
 ArgParser::getNumberOfValues(const std::string &identifier)
 {
-    ArgParser::ArgIdentifier* arg = getArgument(identifier);
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
     if(arg == nullptr) {
         return 0;
     }
@@ -386,23 +424,29 @@ ArgParser::getNumberOfValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::getStringValues
- * @param identifier
- * @return
+ * @brief get parsed string values of an identifier
+ *
+ * @param identifier regested identifier without "--" or "-"
+ *
+ * @return list of parsed string values
  */
 const std::vector<std::string>
 ArgParser::getStringValues(const std::string &identifier)
 {
     std::vector<std::string> result;
 
-    ArgParser::ArgIdentifier* arg = getArgument(identifier);
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
+
+    // check argument-type
     if(arg->type != STRING_TYPE) {
         return result;
     }
 
+    // build list with all results
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
         result.push_back(arg->results->get(i)->getString());
@@ -412,23 +456,29 @@ ArgParser::getStringValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::getIntValues
- * @param identifier
- * @return
+ * @brief get parsed long values of an identifier
+ *
+ * @param identifier regested identifier without "--" or "-"
+ *
+ * @return list of parsed long values
  */
 const std::vector<long>
 ArgParser::getIntValues(const std::string &identifier)
 {
     std::vector<long> result;
 
-    ArgParser::ArgIdentifier* arg = getArgument(identifier);
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
+
+    // check argument-type
     if(arg->type != INT_TYPE) {
         return result;
     }
 
+    // build list with all results
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
         result.push_back(arg->results->get(i)->getLong());
@@ -438,23 +488,29 @@ ArgParser::getIntValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::getFloatValues
- * @param identifier
- * @return
+ * @brief get parsed double values of an identifier
+ *
+ * @param identifier regested identifier without "--" or "-"
+ *
+ * @return list of parsed double values
  */
 const std::vector<double>
 ArgParser::getFloatValues(const std::string &identifier)
 {
     std::vector<double> result;
 
-    ArgParser::ArgIdentifier* arg = getArgument(identifier);
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
+
+    // check argument-type
     if(arg->type != FLOAT_TYPE) {
         return result;
     }
 
+    // build list with all results
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
         result.push_back(arg->results->get(i)->getDouble());
@@ -464,23 +520,29 @@ ArgParser::getFloatValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::getBoolValues
- * @param identifier
- * @return
+ * @brief get parsed bool values of an identifier
+ *
+ * @param identifier regested identifier without "--" or "-"
+ *
+ * @return list of parsed bool values
  */
 const std::vector<bool>
 ArgParser::getBoolValues(const std::string &identifier)
 {
     std::vector<bool> result;
 
-    ArgParser::ArgIdentifier* arg = getArgument(identifier);
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
     if(arg == nullptr) {
         return result;
     }
+
+    // check argument-type
     if(arg->type != BOOL_TYPE) {
         return result;
     }
 
+    // build list with all results
     for(uint32_t i = 0; i < arg->results->size(); i++)
     {
         result.push_back(arg->results->get(i)->getBool());
@@ -490,11 +552,13 @@ ArgParser::getBoolValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::getArg
- * @param identifier
- * @return
+ * @brief get a registered argument
+ *
+ * @param identifier identifier of the argument without "--" or "-"
+ *
+ * @return nullptr, if identifier is unknown, else pointer to the registered argument
  */
-ArgParser::ArgIdentifier*
+ArgParser::ArgDefinition*
 ArgParser::getArgument(const std::string &identifier)
 {
     for(uint32_t i = 0; i < m_argumentList.size(); i++)
