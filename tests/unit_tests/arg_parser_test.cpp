@@ -27,6 +27,11 @@ ArgParser_Test::ArgParser_Test()
     getIntValues_test();
     getFloatValues_test();
     getBoolValues_test();
+
+    getStringValue_test();
+    getIntValue_test();
+    getFloatValue_test();
+    getBoolValue_test();
 }
 
 /**
@@ -364,6 +369,58 @@ ArgParser_Test::getBoolValues_test()
     const std::vector<bool> ret2 = parser.getBoolValues("lastArg");
     TEST_EQUAL(ret2.size(), 1);
     TEST_EQUAL(ret2.at(0), false);
+}
+
+/**
+ * @brief getStringValue_test
+ */
+void
+ArgParser_Test::getStringValue_test()
+{
+    ArgParser parser;
+    prepareTest(&parser);
+
+    const std::string ret2 = parser.getStringValue("first_arg");
+    TEST_EQUAL(ret2, "poi");
+}
+
+/**
+ * @brief getIntValue_test
+ */
+void
+ArgParser_Test::getIntValue_test()
+{
+    ArgParser parser;
+    prepareTest(&parser);
+
+    const long ret2 = parser.getIntValue("secondArg");
+    TEST_EQUAL(ret2, 42);
+}
+
+/**
+ * @brief getFloatValue_test
+ */
+void
+ArgParser_Test::getFloatValue_test()
+{
+    ArgParser parser;
+    prepareTest(&parser);
+
+    const double ret2 = parser.getFloatValue("thirdArg");
+    TEST_EQUAL(ret2, 42.25);
+}
+
+/**
+ * @brief getBoolValue_test
+ */
+void
+ArgParser_Test::getBoolValue_test()
+{
+    ArgParser parser;
+    prepareTest(&parser);
+
+    const bool ret2 = parser.getBoolValue("lastArg");
+    TEST_EQUAL(ret2, false);
 }
 
 /**

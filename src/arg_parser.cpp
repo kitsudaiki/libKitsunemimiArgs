@@ -68,7 +68,8 @@ ArgParser::registerString(const std::string &identifier,
  *                   like "-f"
  * @param helpText help-text for the argument for user-output
  * @param required true, to make the argument required, fals to make it optional
- * @param withoutFlag true, the handle the identifier as flag for the value
+ * @param withoutFlag true, the handle the identifier as flag for the value. If this value is true
+ *                    the required-value is set to true too.
  *
  * @return false, if identifier is already registered or broken, else true
  */
@@ -95,7 +96,8 @@ ArgParser::registerInteger(const std::string &identifier,
  *                   like "-f"
  * @param helpText help-text for the argument for user-output
  * @param required true, to make the argument required, fals to make it optional
- * @param withoutFlag true, the handle the identifier as flag for the value
+ * @param withoutFlag true, the handle the identifier as flag for the value. If this value is true
+ *                    the required-value is set to true too.
  *
  * @return false, if identifier is already registered or broken, else true
  */
@@ -121,7 +123,8 @@ ArgParser::registerFloat(const std::string &identifier,
  *                   like "-f"
  * @param helpText help-text for the argument for user-output
  * @param required true, to make the argument required, fals to make it optional
- * @param withoutFlag true, the handle the identifier as flag for the value
+ * @param withoutFlag true, the handle the identifier as flag for the value. If this value is true
+ *                    the required-value is set to true too.
  *
  * @return false, if identifier is already registered or broken, else true
  */
@@ -148,7 +151,8 @@ ArgParser::registerBoolean(const std::string &identifier,
  * @param helpText help-text for the argument for user-output
  * @param type type identifier
  * @param required true, to make the argument required, fals to make it optional
- * @param withoutFlag true, the handle the identifier as flag for the value
+ * @param withoutFlag true, the handle the identifier as flag for the value. If this value is true
+ *                    the required-value is set to true too.
  *
  * @return false, if identifier is already registered or broken, else true
  */
@@ -222,8 +226,11 @@ ArgParser::registerArgument(const std::string &identifier,
     }
 
     // set other values
-    newArgument.withoutFlag = withoutFlag;
     newArgument.required = required;
+    newArgument.withoutFlag = withoutFlag;
+    if(withoutFlag) {
+        newArgument.required = true;
+    }
     newArgument.type = type;
     newArgument.helpText = helpText;
     newArgument.results = new DataArray();
@@ -442,7 +449,7 @@ ArgParser::getStringValues(const std::string &identifier)
     }
 
     // check argument-type
-    if(arg->type != STRING_TYPE) {
+    if(arg->type != ArgType::STRING_TYPE) {
         return result;
     }
 
@@ -474,7 +481,7 @@ ArgParser::getIntValues(const std::string &identifier)
     }
 
     // check argument-type
-    if(arg->type != INT_TYPE) {
+    if(arg->type != ArgType::INT_TYPE) {
         return result;
     }
 
@@ -506,7 +513,7 @@ ArgParser::getFloatValues(const std::string &identifier)
     }
 
     // check argument-type
-    if(arg->type != FLOAT_TYPE) {
+    if(arg->type != ArgType::FLOAT_TYPE) {
         return result;
     }
 
@@ -538,7 +545,7 @@ ArgParser::getBoolValues(const std::string &identifier)
     }
 
     // check argument-type
-    if(arg->type != BOOL_TYPE) {
+    if(arg->type != ArgType::BOOL_TYPE) {
         return result;
     }
 
@@ -549,6 +556,120 @@ ArgParser::getBoolValues(const std::string &identifier)
     }
 
     return result;
+}
+
+/**
+ * @brief get parsed string value of an required identifier
+ *
+ * @param identifier regested identifier
+ *
+ * @return parsed string value
+ */
+const
+std::string ArgParser::getStringValue(const std::string &identifier)
+{
+    std::vector<std::string> result;
+
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
+    if(arg == nullptr
+            || arg->withoutFlag == false)
+    {
+        return "";
+    }
+
+    // check argument-type
+    if(arg->type != ArgType::STRING_TYPE) {
+        return "";
+    }
+
+    return arg->results->get(0)->getString();
+}
+
+/**
+ * @brief get parsed long value of an required identifier
+ *
+ * @param identifier regested identifier
+ *
+ * @return parsed long value
+ */
+long
+ArgParser::getIntValue(const std::string &identifier)
+{
+    std::vector<long> result;
+
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
+    if(arg == nullptr
+            || arg->withoutFlag == false)
+    {
+        return 0l;
+    }
+
+    // check argument-type
+    if(arg->type != ArgType::INT_TYPE) {
+        return 0l;
+    }
+
+    return arg->results->get(0)->getLong();
+}
+
+/**
+ * @brief get parsed double value of an required identifier
+ *
+ * @param identifier regested identifier
+ *
+ * @return parsed double value
+ */
+double
+ArgParser::getFloatValue(const std::string &identifier)
+{
+    std::vector<double> result;
+
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
+    if(arg == nullptr
+            || arg->withoutFlag == false)
+    {
+        return 0.0;
+    }
+
+    // check argument-type
+    if(arg->type != ArgType::FLOAT_TYPE) {
+        return 0.0;
+    }
+
+
+    return arg->results->get(0)->getDouble();
+}
+
+/**
+ * @brief get parsed bool value of an required identifier
+ *
+ * @param identifier regested identifier
+ *
+ * @return parsed bool value
+ */
+bool
+ArgParser::getBoolValue(const std::string &identifier)
+{
+    std::vector<bool> result;
+
+    // get registered argument
+    ArgParser::ArgDefinition* arg = getArgument(identifier);
+    if(arg == nullptr
+            || arg->withoutFlag == false)
+    {
+        return false;
+    }
+
+    // check argument-type
+    if(arg->type != ArgType::BOOL_TYPE) {
+        return false;
+    }
+
+
+    return arg->results->get(0)->getBool();
 }
 
 /**

@@ -57,6 +57,11 @@ public:
     const std::vector<double> getFloatValues(const std::string &identifier);
     const std::vector<bool> getBoolValues(const std::string &identifier);
 
+    const std::string getStringValue(const std::string &identifier);
+    long getIntValue(const std::string &identifier);
+    double getFloatValue(const std::string &identifier);
+    bool getBoolValue(const std::string &identifier);
+
 private:
     friend ArgParser_Test;
 

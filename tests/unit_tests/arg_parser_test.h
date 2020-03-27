@@ -33,6 +33,11 @@ public:
     void getFloatValues_test();
     void getBoolValues_test();
 
+    void getStringValue_test();
+    void getIntValue_test();
+    void getFloatValue_test();
+    void getBoolValue_test();
+
 private:
     void prepareTest(ArgParser* parser);
 };
