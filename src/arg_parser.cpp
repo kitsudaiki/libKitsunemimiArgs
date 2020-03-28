@@ -214,7 +214,7 @@ ArgParser::registerArgument(const std::string &identifier,
     // check splitting-result
     if(identifierList.size() > 2)
     {
-        LOG_ERROR("argument identifier is long: " + identifier);
+        LOG_ERROR("argument identifier name is too long: " + identifier);
         return false;
     }
 
@@ -441,7 +441,15 @@ ArgParser::parse(const int argc,
                 DataItem* convertedValue = convertValue(currentValue, argIdent->type);
                 if(convertedValue == nullptr)
                 {
-                    LOG_ERROR("argument has the false type: " + currentArgument);
+                    const std::string errMsg = "argument has the false type: "
+                                               "\n    required type: "
+                                               + convertType(argIdent->type)
+                                               + "\n    identifier: "
+                                               + currentArgument
+                                               + "\n    given value: "
+                                               + currentValue;
+
+                    LOG_ERROR(errMsg);
                     return false;
                 }
 
@@ -471,7 +479,15 @@ ArgParser::parse(const int argc,
                         DataItem* convertedValue = convertValue(currentArgument, argIdent->type);
                         if(convertedValue == nullptr)
                         {
-                            LOG_ERROR("argument has the false type: " + currentArgument);
+                            const std::string errMsg = "argument has the false type: "
+                                                       "\n    required type: "
+                                                       + convertType(argIdent->type)
+                                                       + "\n    identifier: "
+                                                       + m_argumentList[j].longIdentifier
+                                                       + "\n    given value: "
+                                                       + currentArgument;
+
+                            LOG_ERROR(errMsg);
                             return false;
                         }
 
@@ -816,7 +832,7 @@ ArgParser::print(const std::string &commandName)
     withFlags.addColumn("short");
     withFlags.addColumn("type");
     withFlags.addColumn("is required");
-    withFlags.addColumn("text");
+    withFlags.addColumn("help-text");
 
     for(uint32_t i = 0; i < m_argumentList.size(); i++)
     {

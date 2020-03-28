@@ -33,7 +33,7 @@ IMPORTANT: All my projects are only tested on Linux.
 Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
 libKitsunemimiCommon | v0.12.0 |  https://github.com/tobiasanker/libKitsunemimiCommon.git
-libKitsunemimiPersistence | v0.7.2 | https://github.com/tobiasanker/libKitsunemimiPersistence.git
+libKitsunemimiPersistence | v0.8.0 | https://github.com/tobiasanker/libKitsunemimiPersistence.git
 
 HINT: These Kitsunemimi-Libraries will be downloaded and build automatically with the build-script below.
 
@@ -64,25 +64,33 @@ Tested on Debian and Ubuntu. If you use Centos, Arch, etc and the build-script f
 int main(int argc, char *argv[])
 {
     // error messages of the parser are printed via logger
-    Kitsunemimi::Persistence::initLogger("/tmp", "testlog", true, true);
+    Kitsunemimi::Persistence::initConsoleLogger(true);
+    // with "initFileLogger" the error-message of the argument-parser can also be written into a file
 
     Kitsunemimi::Args::ArgParser parser;
 
-    // register flags
-    parser.registerString("asdf", 
-	                  "optional test-flag");
-    parser.registerInteger("test_integer,i", 
-	                   "optional int values for testing");
+    // register flags without value
+    parser.registerPlain("debug,d",
+                         "debug-flag to enable addtional debug output");
+    // "registerPlain" allows it to register flags without any value, which says only true or flase
+    //                 if they were set or not set
 
-    // register other values 
-    parser.registerString("first_arg", 
-                          "first required argument", 
+    // register flags
+    parser.registerString("source",
+                          "source-path",
+                          true);
+    parser.registerInteger("input,i",
+                           "additional parameter");
+
+    // register other values
+    parser.registerString("mode",
+                          "modus for converting",
                           true,  // true to make it requried
                           true); // true to register this without a "--"-flag
-    parser.registerInteger("second_arg", 
-                           "second requred argument", 
-                           true, 
-                           true);
+    parser.registerString("destination",
+                          "destination path for output",
+                          true,
+                          true);
     // register types:
     //     registerString
     //     registerInteger
@@ -90,22 +98,76 @@ int main(int argc, char *argv[])
     //     registerBoolean
 
     bool ret = parser.parse(argc, argv);
+    if(ret == false) {
+        return 1;
+    }
+    // ret say, if the converting was successful or not. Error-message are written in the logger
 
-    const std::vector<std::string> testValues = parser.getStringValues("asdf");
-    // ...
+    // check if flags without values were set. In this case check if the debug-flag was set
+    bool debug = parser.wasSet("debug");
 
-    const std::vector<long> numbers = parser.getIntValues("test_integer");
-    // ...
+    // get values with or without flag as list of value for the case, that a flag was
+    // used multiple times within one cli-call:
+    const std::vector<std::string> testValues = parser.getStringValues("source");
+    const std::vector<long> numbers = parser.getIntValues("input");
+    // get types:
+    //     getStringValues
+    //     getIntValues
+    //     getFloatValues
+    //     getBoolValues
 
-    const std::string testValue = parser.getStringValue("first_arg");
-    // ...
+    // get values without flag:
+    const std::string mode = parser.getStringValue("mode");
+    const std::string destination = parser.getStringValue("destination");
+    // get types:
+    //     getStringValue
+    //     getIntValue
+    //     getFloatValue
+    //     getBoolValue
 
-    const long number = parser.getIntValue("second_arg");
-    // ...
+    //...
+
+    return 0;
 }
 
 ```
 
+If the tool would called `cli_test` the command `cli_test --help` would produce the following output:
+
+```
+command: cli_test [options] --source ... <mode> <destination>
+
+Options:
++----------+-------+--------+-------------+---------------------------------------------+
+| long     | short | type   | is required | help-text                                        |
++==========+=======+========+=============+=============================================+
+| --help   | -h    |        |             | print help ouput                            |
++----------+-------+--------+-------------+---------------------------------------------+
+| --debug  | -d    |        |             | debug-flag to enable addtional debug output |
++----------+-------+--------+-------------+---------------------------------------------+
+| --source |       | string | x           | source-path                                 |
++----------+-------+--------+-------------+---------------------------------------------+
+| --input  | -i    | number |             | additional parameter                        |
++----------+-------+--------+-------------+---------------------------------------------+
+
+Required:
++---------------+--------+-----------------------------+
+| name          | type   | text                        |
++===============+========+=============================+
+| <mode>        | string | modus for converting        |
++---------------+--------+-----------------------------+
+| <destination> | number | destination path for output |
++---------------+--------+-----------------------------+
+```
+
+If this example is called with a string `asdf` for the flag `-i`, the error-message looks like this:
+
+```
+ERROR: argument has the false type: 
+    required type: number
+    identifier: -i
+    given value: asdf
+```
 
 ## Contributing
 
