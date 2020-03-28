@@ -57,6 +57,11 @@ Tested on Debian and Ubuntu. If you use Centos, Arch, etc and the build-script f
 
 ## Usage by example
 
+This example should show, how the parser is used and what is possible.
+
+HINT: The flags `--help` and `-h` for the help-output are hard coded and don't have to be set.
+
+
 ```cpp
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiPersistence/logger/logger.h>
@@ -97,6 +102,7 @@ int main(int argc, char *argv[])
     //     registerFloat
     //     registerBoolean
 
+    // parse incoming arguments
     bool ret = parser.parse(argc, argv);
     if(ret == false) {
         return 1;
