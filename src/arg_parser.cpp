@@ -428,7 +428,7 @@ ArgParser::parse(const int argc,
             if(argIdent->hasValue)
             {
                 // check if there is a value for the identifier
-                if(i+i == argc)
+                if(i+1 == argc)
                 {
                     LOG_ERROR("flag has no value: " + currentArgument);
                     return false;
