@@ -890,6 +890,8 @@ ArgParser::print(const std::string &commandName)
     std::cout<<withFlags.toString(200)<<std::endl;
     std::cout<<"Required:"<<std::endl;
     std::cout<<withoutFlags.toString(200)<<std::endl;
+
+    exit(0);
 }
 
 /**
