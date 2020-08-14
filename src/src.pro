@@ -15,14 +15,19 @@ LIBS += -L../../libKitsunemimiPersistence/src/debug -lKitsunemimiPersistence
 LIBS += -L../../libKitsunemimiPersistence/src/release -lKitsunemimiPersistence
 INCLUDEPATH += ../../libKitsunemimiPersistence/include
 
+
 LIBS +=  -lboost_filesystem -lboost_system
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
-    ../include/libKitsunemimiArgs/arg_parser.h
+    ../include/libKitsunemimiArgs/arg_parser.h \
+    ../include/libKitsunemimiArgs/subcommand.h \
+    sub_command_entry.h
 
 SOURCES += \
-    arg_parser.cpp
+    arg_parser.cpp \
+    subcommand.cpp \
+    sub_command_entry.cpp
 
