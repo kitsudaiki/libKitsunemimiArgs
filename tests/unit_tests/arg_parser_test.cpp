@@ -1,3 +1,11 @@
+/**
+ *  @file       arg_parser_test.cpp
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #include "arg_parser_test.h"
 
 #include <libKitsunemimiCommon/common_items/data_items.h>

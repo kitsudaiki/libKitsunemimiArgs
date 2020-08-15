@@ -1,3 +1,11 @@
+/**
+ *  @file       sub_command_entry_test.cpp
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #include "sub_command_entry_test.h"
 
 #include <sub_command_entry.h>

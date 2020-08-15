@@ -1,3 +1,11 @@
+/**
+ *  @file       main.cpp
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #include <arg_parser_test.h>
 #include <sub_command_entry_test.h>
 #include <sub_command_test.h>

@@ -1,3 +1,11 @@
+/**
+ *  @file       sub_command_test.h
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #ifndef SUB_COMMAND_TEST_H
 #define SUB_COMMAND_TEST_H
 

@@ -29,15 +29,18 @@ SubCommandEntry::~SubCommandEntry()
 }
 
 /**
- * @brief SubCommandEntry::add
- * @param path
- * @param newEntry
- * @return
+ * @brief register new sub-command
+ *
+ * @param path sub-command path
+ * @param parser argument-parser at the end of the new sub-command
+ *
+ * @return flase, if already registered
  */
 bool
 SubCommandEntry::add(std::vector<std::string> &path,
                      ArgParser* parser)
 {
+    // precheck
     if(parser == nullptr) {
         return false;
     }
@@ -71,6 +74,7 @@ SubCommandEntry::add(std::vector<std::string> &path,
     }
     else
     {
+        // create new entry, if no one was found
         result = new SubCommandEntry();
         next.insert(std::make_pair(firstValue, result));
     }
@@ -79,9 +83,11 @@ SubCommandEntry::add(std::vector<std::string> &path,
 }
 
 /**
- * @brief SubCommandEntry::get
- * @param key
- * @return
+ * @brief get next entry
+ *
+ * @param key key for the next entry
+ *
+ * @return nullptr, if key is not registered, else pointer to the next entry
  */
 SubCommandEntry*
 SubCommandEntry::get(const std::string &key)
@@ -102,7 +108,7 @@ SubCommandEntry::get(const std::string &key)
 }
 
 /**
- * @brief SubCommandEntry::clearMap
+ * @brief clear map and delete parser of current entry and sub-entries
  */
 void
 SubCommandEntry::clearMap()

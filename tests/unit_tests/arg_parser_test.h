@@ -1,3 +1,11 @@
+/**
+ *  @file       arg_parser_test.h
+ *
+ *  @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ *  @copyright  MIT License
+ */
+
 #ifndef ARG_PARSER_TEST_H
 #define ARG_PARSER_TEST_H
 

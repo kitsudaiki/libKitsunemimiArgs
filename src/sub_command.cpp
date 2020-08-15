@@ -32,10 +32,12 @@ SubCommand::~SubCommand()
 }
 
 /**
- * @brief SubCommand::registerSubCommand
- * @param path
- * @param parser
- * @return
+ * @brief register new sub-command
+ *
+ * @param path sub-command path
+ * @param parser argument-parser at the end of the new sub-command
+ *
+ * @return flase, if already registered
  */
 bool
 SubCommand::registerSubCommand(const std::vector<std::string> &path,
@@ -46,10 +48,12 @@ SubCommand::registerSubCommand(const std::vector<std::string> &path,
 }
 
 /**
- * @brief SubCommand::parse
- * @param argc
- * @param argv
- * @return
+ * @brief parse cli-arguments
+ *
+ * @param argc number of arguments
+ * @param argv arguments
+ *
+ * @return false, if parsing failed
  */
 bool
 SubCommand::parse(const int argc,
@@ -60,10 +64,12 @@ SubCommand::parse(const int argc,
 }
 
 /**
- * @brief SubCommand::parse
- * @param argc
- * @param argv
- * @return
+ * @brief parse cli-arguments
+ *
+ * @param argc number of arguments
+ * @param argv arguments as const char
+ *
+ * @return false, if parsing failed
  */
 bool
 SubCommand::parse(const int argc,
@@ -75,6 +81,12 @@ SubCommand::parse(const int argc,
     while(i < argc)
     {
         const std::string currentArgument(argv[i]);
+
+        // in case, that there is already reached the first flag
+        if(currentArgument.at(0) == '-') {
+            return false;
+        }
+
         SubCommandEntry* temp = next->get(currentArgument);
 
         // case of invalid path
