@@ -6,7 +6,7 @@
  *  @copyright  MIT License
  */
 
-#include <libKitsunemimiArgs/subcommand.h>
+#include <libKitsunemimiArgs/sub_command.h>
 #include <sub_command_entry.h>
 #include <libKitsunemimiArgs/arg_parser.h>
 
