@@ -77,6 +77,11 @@ SubCommand::parse(const int argc,
         const std::string currentArgument(argv[i]);
         SubCommandEntry* temp = next->get(currentArgument);
 
+        // case of invalid path
+        if(temp == nullptr) {
+            return false;
+        }
+
         if(temp->parser != nullptr) {
             return temp->parser->parse(argc - i, &argv[i]);
         }

@@ -17,6 +17,8 @@ namespace Kitsunemimi
 {
 namespace Args
 {
+class SubCommand_Test;
+
 class SubCommandEntry;
 class ArgParser;
 
@@ -26,14 +28,16 @@ public:
     SubCommand();
     ~SubCommand();
 
-    bool registerSubCommand(const std::vector<std::string> &path, ArgParser* parser);
-    bool unregisterSubCommand(const std::vector<std::string> &path);
+    bool registerSubCommand(const std::vector<std::string> &path,
+                            ArgParser* parser);
 
     // parse
     bool parse(const int argc, char *argv[]);
     bool parse(const int argc, const char* argv[]);
 
 private:
+    friend SubCommand_Test;
+
     SubCommandEntry* m_rootObject = nullptr;
 };
 

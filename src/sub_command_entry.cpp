@@ -26,10 +26,6 @@ SubCommandEntry::SubCommandEntry() {}
 SubCommandEntry::~SubCommandEntry()
 {
     clearMap();
-
-    if(parser != nullptr) {
-        delete parser;
-    }
 }
 
 /**
@@ -42,6 +38,10 @@ bool
 SubCommandEntry::add(std::vector<std::string> &path,
                      ArgParser* parser)
 {
+    if(parser == nullptr) {
+        return false;
+    }
+
     // terminate
     if(path.size() == 0)
     {
@@ -64,10 +64,15 @@ SubCommandEntry::add(std::vector<std::string> &path,
     // search for value and make recursive call, if found
     std::map<std::string, SubCommandEntry*>::const_iterator it;
     it = next.find(firstValue);
-    if(it != next.end()) {
+
+    if(it != next.end())
+    {
         result = it->second;
-    } else {
-        next.insert(std::make_pair(firstValue, new SubCommandEntry()));
+    }
+    else
+    {
+        result = new SubCommandEntry();
+        next.insert(std::make_pair(firstValue, result));
     }
 
     return result->add(path, parser);
@@ -102,12 +107,21 @@ SubCommandEntry::get(const std::string &key)
 void
 SubCommandEntry::clearMap()
 {
+    // remove next entries
     std::map<std::string, SubCommandEntry*>::iterator it;
     for(it = next.begin();
         it != next.end();
         it++)
     {
         delete it->second;
+    }
+    next.clear();
+
+    // remove arg-parser of the current entry, if exist
+    if(parser != nullptr)
+    {
+        delete parser;
+        parser = nullptr;
     }
 }
 

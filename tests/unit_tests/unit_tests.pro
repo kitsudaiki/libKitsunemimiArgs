@@ -22,7 +22,11 @@ LIBS +=  -lboost_filesystem -lboost_system
 
 SOURCES += \
     main.cpp \
-    arg_parser_test.cpp
+    arg_parser_test.cpp \
+    sub_command_test.cpp \
+    sub_command_entry_test.cpp
 
 HEADERS += \
-    arg_parser_test.h
+    arg_parser_test.h \
+    sub_command_test.h \
+    sub_command_entry_test.h
