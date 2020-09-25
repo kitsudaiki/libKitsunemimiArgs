@@ -355,8 +355,9 @@ ArgParser::convertValue(const std::string &value,
  * @return
  */
 bool
-ArgParser::precheckForHelp(const int argc,
-                           const char* argv[])
+ArgParser::precheckFlags(const int argc,
+                         const char* argv[],
+                         const std::string &version)
 {
     const std::string programmPath(argv[0]);
     std::vector<std::string> pathParts;
@@ -365,11 +366,21 @@ ArgParser::precheckForHelp(const int argc,
     for(int i = 1; i < argc; i++)
     {
         const std::string currentArgument(argv[i]);
+
+        // check for help-flag
         if(currentArgument == "-h"
                 || currentArgument == "--help")
         {
             print(pathParts.at(pathParts.size()-1));
             return true;
+        }
+
+        // check for version-flag
+        if(currentArgument == "-v"
+                || currentArgument == "--version")
+        {
+            std::cout<<"version: "<<version<<std::endl;
+            exit(0);
         }
     }
 
@@ -386,10 +397,11 @@ ArgParser::precheckForHelp(const int argc,
  */
 bool
 ArgParser::parse(const int argc,
-                 char* argv[])
+                 char* argv[],
+                 const std::string &version)
 {
     // TODO: find better solution without warning
-    return parse(argc, (const char**)argv);
+    return parse(argc, (const char**)argv, version);
 }
 
 /**
@@ -402,9 +414,10 @@ ArgParser::parse(const int argc,
  */
 bool
 ArgParser::parse(const int argc,
-                 const char* argv[])
+                 const char* argv[],
+                 const std::string &version)
 {
-    if(precheckForHelp(argc, argv)) {
+    if(precheckFlags(argc, argv, version)) {
         return true;
     }
 

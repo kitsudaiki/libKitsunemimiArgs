@@ -83,13 +83,13 @@ SubCommand_Test::parse_test()
     argv[15] = "42.25";
     argv[16] = "false";
 
-    TEST_EQUAL(subCommand.parse(argc, argv), true);
+    TEST_EQUAL(subCommand.parse(argc, argv, "0.1.0"), true);
 
     argv[2] = "xyz";
-    TEST_EQUAL(subCommand.parse(argc, argv), true);
+    TEST_EQUAL(subCommand.parse(argc, argv, "0.1.0"), true);
 
     argv[1] = "fail";
-    TEST_EQUAL(subCommand.parse(argc, argv), false);
+    TEST_EQUAL(subCommand.parse(argc, argv, "0.1.0"), false);
 }
 
 /**

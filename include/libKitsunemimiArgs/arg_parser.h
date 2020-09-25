@@ -49,8 +49,8 @@ public:
                          bool withoutFlag = false);
 
     // parse
-    bool parse(const int argc, char *argv[]);
-    bool parse(const int argc, const char* argv[]);
+    bool parse(const int argc, char *argv[], const std::string &version);
+    bool parse(const int argc, const char* argv[], const std::string &version);
 
     // getter
     uint64_t getNumberOfValues(const std::string &identifier);
@@ -96,8 +96,9 @@ private:
 
     const std::string convertType(ArgType type);
     void print(const std::string &commandName);
-    bool precheckForHelp(const int argc,
-                         const char* argv[]);
+    bool precheckFlags(const int argc,
+                       const char* argv[],
+                       const std::string &version);
 
     ArgDefinition* getArgument(const std::string &identifier);
     bool registerArgument(const std::string &identifier,
