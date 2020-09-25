@@ -32,8 +32,8 @@ public:
                             ArgParser* parser);
 
     // parse
-    bool parse(const int argc, char *argv[]);
-    bool parse(const int argc, const char* argv[]);
+    bool parse(const int argc, char *argv[], const std::string &version);
+    bool parse(const int argc, const char* argv[], const std::string &version);
 
 private:
     friend SubCommand_Test;

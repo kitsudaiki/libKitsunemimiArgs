@@ -57,10 +57,11 @@ SubCommand::registerSubCommand(const std::vector<std::string> &path,
  */
 bool
 SubCommand::parse(const int argc,
-                  char* argv[])
+                  char* argv[],
+                  const std::string &version)
 {
     // TODO: find better solution without warning
-    return parse(argc, (const char**)argv);
+    return parse(argc, (const char**)argv, version);
 }
 
 /**
@@ -73,7 +74,8 @@ SubCommand::parse(const int argc,
  */
 bool
 SubCommand::parse(const int argc,
-                  const char* argv[])
+                  const char* argv[],
+                  const std::string &version)
 {
     SubCommandEntry* next = m_rootObject;
 
@@ -95,7 +97,7 @@ SubCommand::parse(const int argc,
         }
 
         if(temp->parser != nullptr) {
-            return temp->parser->parse(argc - i, &argv[i]);
+            return temp->parser->parse(argc - i, &argv[i], version);
         }
 
         i++;
