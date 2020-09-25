@@ -282,21 +282,21 @@ ArgParser_Test::parse_test()
     parser.registerFloat("thirdArg", "third argument", true, true);
     parser.registerBoolean("lastArg", "last argument", true, true);
 
-    TEST_EQUAL(parser.parse(argc, argv), true);
+    TEST_EQUAL(parser.parse(argc, argv, "0.1.0"), true);
 
     // negative test: set argument `bool` to a non-bool value
     argv[6] = "asdf";
-    TEST_EQUAL(parser.parse(argc, argv), false);
+    TEST_EQUAL(parser.parse(argc, argv, "0.1.0"), false);
     argv[6] = "true";
 
     // negative test: set a value without flag to a false type
     argv[12] = "asdf";
-    TEST_EQUAL(parser.parse(argc, argv), false);
+    TEST_EQUAL(parser.parse(argc, argv, "0.1.0"), false);
      argv[12] = "42";
 
     // negative test: register a required value, which is not given in the arguments
     parser.registerBoolean("fail", "this is a boolean", true);
-    TEST_EQUAL(parser.parse(argc, argv), false);
+    TEST_EQUAL(parser.parse(argc, argv, "0.1.0"), false);
 }
 
 /**
@@ -474,7 +474,7 @@ ArgParser_Test::prepareTest(ArgParser *parser)
     parser->registerFloat("thirdArg", "third argument", true, true);
     parser->registerBoolean("lastArg", "last argument", true, true);
 
-    assert(parser->parse(argc, argv));
+    assert(parser->parse(argc, argv, "0.1.0"));
 }
 
 }

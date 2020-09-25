@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     //     registerFloat
     //     registerBoolean
 
-    bool ret = parser.parse(argc, argv);
+    bool ret = parser.parse(argc, argv, "0.1.0");
     if(ret == false) {
         return 1;
     }
