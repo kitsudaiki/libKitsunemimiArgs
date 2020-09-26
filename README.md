@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     Kitsunemimi::Persistence::initConsoleLogger(true);
     // with "initFileLogger" the error-message of the argument-parser can also be written into a file
 
-    Kitsunemimi::Args::ArgParser parser;
+    Kitsunemimi::Args::ArgParser parser("0.1.0");
 
     // register flags without value
     parser.registerPlain("debug,d",
@@ -145,17 +145,19 @@ If the tool would called `cli_test` the command `cli_test --help` would produce 
 command: cli_test [options] --source ... <mode> <destination>
 
 Options:
-+----------+-------+--------+-------------+---------------------------------------------+
-| long     | short | type   | is required | help-text                                        |
-+==========+=======+========+=============+=============================================+
-| --help   | -h    |        |             | print help ouput                            |
-+----------+-------+--------+-------------+---------------------------------------------+
-| --debug  | -d    |        |             | debug-flag to enable addtional debug output |
-+----------+-------+--------+-------------+---------------------------------------------+
-| --source |       | string | x           | source-path                                 |
-+----------+-------+--------+-------------+---------------------------------------------+
-| --input  | -i    | number |             | additional parameter                        |
-+----------+-------+--------+-------------+---------------------------------------------+
++-----------+-------+--------+-------------+---------------------------------------------+
+| long      | short | type   | is required | help-text                                   |
++===========+=======+========+=============+=============================================+
+| --help    | -h    |        |             | print help ouput                            |
++-----------+-------+--------+-------------+---------------------------------------------+
+| --version | -v    |        |             | print program version                       |
++-----------+-------+--------+-------------+---------------------------------------------+
+| --debug   | -d    |        |             | debug-flag to enable addtional debug output |
++-----------+-------+--------+-------------+---------------------------------------------+
+| --source  |       | string | x           | source-path                                 |
++-----------+-------+--------+-------------+---------------------------------------------+
+| --input   | -i    | number |             | additional parameter                        |
++-----------+-------+--------+-------------+---------------------------------------------+
 
 Required:
 +---------------+--------+-----------------------------+

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2020-09-26
+
+### Added
+- optional --version, -v flags for version-output
+
+
 ## [0.2.0] - 2020-08-23
 
 ### Added
