@@ -18,8 +18,9 @@ namespace Args
 /**
  * @brief SubCommand::SubCommand
  */
-SubCommand::SubCommand()
+SubCommand::SubCommand(const std::string &version)
 {
+    m_version = version;
     m_rootObject = new SubCommandEntry();
 }
 
@@ -37,13 +38,19 @@ SubCommand::~SubCommand()
  * @param path sub-command path
  * @param parser argument-parser at the end of the new sub-command
  *
- * @return flase, if already registered
+ * @return false, if already registered or parser is nullptr, else true
  */
 bool
 SubCommand::registerSubCommand(const std::vector<std::string> &path,
                                ArgParser* parser)
 {
+    if(parser == nullptr) {
+        return false;
+    }
+
     std::vector<std::string> inputPath = path;
+    parser->m_version = m_version;
+
     return m_rootObject->add(inputPath, parser);
 }
 
@@ -57,11 +64,10 @@ SubCommand::registerSubCommand(const std::vector<std::string> &path,
  */
 bool
 SubCommand::parse(const int argc,
-                  char* argv[],
-                  const std::string &version)
+                  char* argv[])
 {
     // TODO: find better solution without warning
-    return parse(argc, (const char**)argv, version);
+    return parse(argc, (const char**)argv);
 }
 
 /**
@@ -74,8 +80,7 @@ SubCommand::parse(const int argc,
  */
 bool
 SubCommand::parse(const int argc,
-                  const char* argv[],
-                  const std::string &version)
+                  const char* argv[])
 {
     SubCommandEntry* next = m_rootObject;
 
@@ -97,7 +102,7 @@ SubCommand::parse(const int argc,
         }
 
         if(temp->parser != nullptr) {
-            return temp->parser->parse(argc - i, &argv[i], version);
+            return temp->parser->parse(argc - i, &argv[i]);
         }
 
         i++;
