@@ -22,10 +22,16 @@ namespace Args
 /**
  * @brief constructor
  */
-ArgParser::ArgParser()
+ArgParser::ArgParser(const std::string &version)
 {
     // register the help-output as special case
     registerPlain("help,h", "print help ouput");
+
+    if(version != "")
+    {
+        m_version = version;
+        registerPlain("version,v", "print program version");
+    }
 }
 
 /**
@@ -356,8 +362,7 @@ ArgParser::convertValue(const std::string &value,
  */
 bool
 ArgParser::precheckFlags(const int argc,
-                         const char* argv[],
-                         const std::string &version)
+                         const char* argv[])
 {
     const std::string programmPath(argv[0]);
     std::vector<std::string> pathParts;
@@ -375,12 +380,15 @@ ArgParser::precheckFlags(const int argc,
             return true;
         }
 
-        // check for version-flag
-        if(currentArgument == "-v"
-                || currentArgument == "--version")
+        if(m_version != "")
         {
-            std::cout<<"version: "<<version<<std::endl;
-            exit(0);
+            // check for version-flag
+            if(currentArgument == "-v"
+                    || currentArgument == "--version")
+            {
+                std::cout<<"version: "<<m_version<<std::endl;
+                exit(0);
+            }
         }
     }
 
@@ -397,11 +405,10 @@ ArgParser::precheckFlags(const int argc,
  */
 bool
 ArgParser::parse(const int argc,
-                 char* argv[],
-                 const std::string &version)
+                 char* argv[])
 {
     // TODO: find better solution without warning
-    return parse(argc, (const char**)argv, version);
+    return parse(argc, (const char**)argv);
 }
 
 /**
@@ -414,10 +421,9 @@ ArgParser::parse(const int argc,
  */
 bool
 ArgParser::parse(const int argc,
-                 const char* argv[],
-                 const std::string &version)
+                 const char* argv[])
 {
-    if(precheckFlags(argc, argv, version)) {
+    if(precheckFlags(argc, argv)) {
         return true;
     }
 

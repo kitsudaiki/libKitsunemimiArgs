@@ -21,11 +21,12 @@ class DataArray;
 namespace Args
 {
 class ArgParser_Test;
+class SubCommand;
 
 class ArgParser
 {
 public:
-    ArgParser();
+    ArgParser(const std::string &version = "");
     ~ArgParser();
 
     // register
@@ -49,8 +50,8 @@ public:
                          bool withoutFlag = false);
 
     // parse
-    bool parse(const int argc, char *argv[], const std::string &version);
-    bool parse(const int argc, const char* argv[], const std::string &version);
+    bool parse(const int argc, char *argv[]);
+    bool parse(const int argc, const char* argv[]);
 
     // getter
     uint64_t getNumberOfValues(const std::string &identifier);
@@ -67,6 +68,7 @@ public:
 
 private:
     friend ArgParser_Test;
+    friend SubCommand;
 
     enum ArgType
     {
@@ -92,13 +94,12 @@ private:
     };
 
     uint32_t m_positionCounter = 0;
+    std::string m_version = "";
     std::vector<ArgDefinition> m_argumentList;
 
     const std::string convertType(ArgType type);
     void print(const std::string &commandName);
-    bool precheckFlags(const int argc,
-                       const char* argv[],
-                       const std::string &version);
+    bool precheckFlags(const int argc, const char* argv[]);
 
     ArgDefinition* getArgument(const std::string &identifier);
     bool registerArgument(const std::string &identifier,

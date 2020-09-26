@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     // error messages of the parser are printed via logger
     Kitsunemimi::Persistence::initConsoleLogger(true);
 
-    Kitsunemimi::Args::ArgParser parser;
+    Kitsunemimi::Args::ArgParser parser("0.1.0");
 
     // register flags without value
     parser.registerPlain("debug,d",
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     //     registerFloat
     //     registerBoolean
 
-    bool ret = parser.parse(argc, argv, "0.1.0");
+    bool ret = parser.parse(argc, argv);
     if(ret == false) {
         return 1;
     }
