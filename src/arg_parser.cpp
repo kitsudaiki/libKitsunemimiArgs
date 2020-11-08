@@ -597,8 +597,7 @@ ArgParser::getStringValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++)
-    {
+    for(uint32_t i = 0; i < arg->results->size(); i++) {
         result.push_back(arg->results->get(i)->getString());
     }
 
@@ -629,8 +628,7 @@ ArgParser::getIntValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++)
-    {
+    for(uint32_t i = 0; i < arg->results->size(); i++) {
         result.push_back(arg->results->get(i)->getLong());
     }
 
@@ -661,8 +659,7 @@ ArgParser::getFloatValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++)
-    {
+    for(uint32_t i = 0; i < arg->results->size(); i++) {
         result.push_back(arg->results->get(i)->getDouble());
     }
 
@@ -693,8 +690,7 @@ ArgParser::getBoolValues(const std::string &identifier)
     }
 
     // build list with all results
-    for(uint32_t i = 0; i < arg->results->size(); i++)
-    {
+    for(uint32_t i = 0; i < arg->results->size(); i++) {
         result.push_back(arg->results->get(i)->getBool());
     }
 
@@ -708,16 +704,14 @@ ArgParser::getBoolValues(const std::string &identifier)
  *
  * @return parsed string value
  */
-const
-std::string ArgParser::getStringValue(const std::string &identifier)
+const std::string
+ArgParser::getStringValue(const std::string &identifier)
 {
     std::vector<std::string> result;
 
     // get registered argument
     ArgParser::ArgDefinition* arg = getArgument(identifier);
-    if(arg == nullptr
-            || arg->withoutFlag == false)
-    {
+    if(arg == nullptr) {
         return "";
     }
 
@@ -743,9 +737,7 @@ ArgParser::getIntValue(const std::string &identifier)
 
     // get registered argument
     ArgParser::ArgDefinition* arg = getArgument(identifier);
-    if(arg == nullptr
-            || arg->withoutFlag == false)
-    {
+    if(arg == nullptr) {
         return 0l;
     }
 
@@ -771,9 +763,7 @@ ArgParser::getFloatValue(const std::string &identifier)
 
     // get registered argument
     ArgParser::ArgDefinition* arg = getArgument(identifier);
-    if(arg == nullptr
-            || arg->withoutFlag == false)
-    {
+    if(arg == nullptr) {
         return 0.0;
     }
 
@@ -799,9 +789,7 @@ ArgParser::getBoolValue(const std::string &identifier)
 
     // get registered argument
     ArgParser::ArgDefinition* arg = getArgument(identifier);
-    if(arg == nullptr
-            || arg->withoutFlag == false)
-    {
+    if(arg == nullptr) {
         return false;
     }
 
