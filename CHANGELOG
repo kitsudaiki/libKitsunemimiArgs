@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2] - 2021-07-28
+
+### Added
+- some more validation
+
+### Fixed
+- now possible to define only flaged values
+
+
 ## [0.2.1] - 2020-09-26
 
 ### Added
