@@ -720,6 +720,11 @@ ArgParser::getStringValue(const std::string &identifier)
         return "";
     }
 
+    // check result not empty
+    if(arg->results->size() == 0) {
+        return "";
+    }
+
     return arg->results->get(0)->getString();
 }
 
@@ -743,6 +748,11 @@ ArgParser::getIntValue(const std::string &identifier)
 
     // check argument-type
     if(arg->type != ArgType::INT_TYPE) {
+        return 0l;
+    }
+
+    // check result not empty
+    if(arg->results->size() == 0) {
         return 0l;
     }
 
@@ -772,6 +782,11 @@ ArgParser::getFloatValue(const std::string &identifier)
         return 0.0;
     }
 
+    // check result not empty
+    if(arg->results->size() == 0) {
+        return 0.0;
+    }
+
     return arg->results->get(0)->getDouble();
 }
 
@@ -795,6 +810,11 @@ ArgParser::getBoolValue(const std::string &identifier)
 
     // check argument-type
     if(arg->type != ArgType::BOOL_TYPE) {
+        return false;
+    }
+
+    // check result not empty
+    if(arg->results->size() == 0) {
         return false;
     }
 
