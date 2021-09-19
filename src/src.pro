@@ -22,12 +22,8 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
-    ../include/libKitsunemimiArgs/arg_parser.h \
-    sub_command_entry.h \
-    ../include/libKitsunemimiArgs/sub_command.h
+    ../include/libKitsunemimiArgs/arg_parser.h
 
 SOURCES += \
-    arg_parser.cpp \
-    sub_command_entry.cpp \
-    sub_command.cpp
+    arg_parser.cpp
 
