@@ -7,12 +7,12 @@
  */
 
 #include <libKitsunemimiArgs/arg_parser.h>
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 
 int main(int argc, char *argv[])
 {
     // error messages of the parser are printed via logger
-    Kitsunemimi::Persistence::initConsoleLogger(true);
+    Kitsunemimi::initConsoleLogger(true);
 
     Kitsunemimi::Args::ArgParser parser("0.1.0");
 
