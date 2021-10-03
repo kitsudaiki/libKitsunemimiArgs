@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2021-10-03
+
+### Removed
+- subcommands were removed, because the are not used
+
+### Changed
+- moved from c++14 to c++17
+
+
 ## [0.2.2] - 2021-07-28
 
 ### Added
