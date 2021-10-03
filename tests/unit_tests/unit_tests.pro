@@ -13,13 +13,6 @@ LIBS += -L../../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
-LIBS += -L../../../libKitsunemimiPersistence/src -lKitsunemimiPersistence
-LIBS += -L../../../libKitsunemimiPersistence/src/debug -lKitsunemimiPersistence
-LIBS += -L../../../libKitsunemimiPersistence/src/release -lKitsunemimiPersistence
-INCLUDEPATH += ../../../libKitsunemimiPersistence/include
-
-LIBS +=  -lboost_filesystem -lboost_system
-
 SOURCES += \
     main.cpp \
     arg_parser_test.cpp
