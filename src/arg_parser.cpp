@@ -355,10 +355,12 @@ ArgParser::convertValue(const std::string &value,
 }
 
 /**
- * @brief ArgParser::precheckForHelp
- * @param argc
- * @param argv
- * @return
+ * @brief precheck for the flags to handle --help and --version
+ *
+ * @param argc number of arguments
+ * @param argv arguments
+ *
+ * @return true, if help or version flag was set, else true
  */
 bool
 ArgParser::precheckFlags(const int argc,
@@ -542,9 +544,12 @@ ArgParser::parse(const int argc,
 }
 
 /**
- * @brief ArgParser::getNumberOfValues
- * @param identifier
- * @return
+ * @brief check how often a flag was set
+ *
+ * @param identifier identifier-name of the flag
+ *
+ * @return 0, if the flag was not set, else the counter of how often the flag was set
+ *
  */
 uint64_t
 ArgParser::getNumberOfValues(const std::string &identifier)
@@ -558,9 +563,11 @@ ArgParser::getNumberOfValues(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::wasSet
- * @param identifier
- * @return
+ * @brief check if a flag was set
+ *
+ * @param identifier identifier-name of the flag
+ *
+ * @return true, if flag was set, else false
  */
 bool
 ArgParser::wasSet(const std::string &identifier)
@@ -822,9 +829,11 @@ ArgParser::getBoolValue(const std::string &identifier)
 }
 
 /**
- * @brief ArgParser::convertType
- * @param type
- * @return
+ * @brief convert type-value into string
+ *
+ * @param type type-value
+ *
+ * @return converted string
  */
 const std::string
 ArgParser::convertType(ArgParser::ArgType type)
