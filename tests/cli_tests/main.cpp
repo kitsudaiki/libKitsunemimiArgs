@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
     // ret say, if the converting was successful or not. Error-message are written in the logger
 
     // check if flags without values were set. In this case check if the debug-flag was set
-    bool debug = parser.wasSet("debug");
 
     // get values with or without flag as list of value for the case, that a flag was
     // used multiple times within one cli-call:

@@ -207,7 +207,10 @@ ArgParser::registerArgument(const std::string &identifier,
     if(identifier.size() == 0
             || identifier.at(0) == ',')
     {
-        LOG_ERROR("No argument identifier was set");
+        ErrorContainer error;
+        error.errorMessage = "No argument identifier was set";
+        error.possibleSolution = "-";
+        LOG_ERROR(error);
         return false;
     }
 
@@ -220,14 +223,20 @@ ArgParser::registerArgument(const std::string &identifier,
     // check splitting-result
     if(identifierList.size() > 2)
     {
-        LOG_ERROR("argument identifier name is too long: " + identifier);
+        ErrorContainer error;
+        error.errorMessage = "argument identifier name is too long: " + identifier;
+        error.possibleSolution = "-";
+        LOG_ERROR(error);
         return false;
     }
 
     // prepare long identifier
     if(identifierList.at(0).size() == 0)
     {
-        LOG_ERROR("argument identifier is invalid: " + identifier);
+        ErrorContainer error;
+        error.errorMessage = "argument identifier is invalid: " + identifier;
+        error.possibleSolution = "-";
+        LOG_ERROR(error);
         return false;
     }
     if(withoutFlag == false) {
@@ -240,7 +249,10 @@ ArgParser::registerArgument(const std::string &identifier,
     ArgParser::ArgDefinition* findLong = getArgument(newArgument.longIdentifier);
     if(findLong != nullptr)
     {
-        LOG_ERROR("argument already in use: " + newArgument.longIdentifier);
+        ErrorContainer error;
+        error.errorMessage = "argument already in use: " + newArgument.longIdentifier;
+        error.possibleSolution = "-";
+        LOG_ERROR(error);
         return false;
     }
 
@@ -250,7 +262,10 @@ ArgParser::registerArgument(const std::string &identifier,
         // check length
         if(identifierList.at(1).size() != 1)
         {
-            LOG_ERROR("Argument identifier is invalid: " + identifier);
+            ErrorContainer error;
+            error.errorMessage = "Argument identifier is invalid: " + identifier;
+            error.possibleSolution = "-";
+            LOG_ERROR(error);
             return false;
         }
 
@@ -260,7 +275,10 @@ ArgParser::registerArgument(const std::string &identifier,
         ArgParser::ArgDefinition* findShort = getArgument(newArgument.shortIdentifier);
         if(findShort != nullptr)
         {
-            LOG_ERROR("argument already in use: " + newArgument.shortIdentifier);
+            ErrorContainer error;
+            error.errorMessage = "argument already in use: " + newArgument.shortIdentifier;
+            error.possibleSolution = "-";
+            LOG_ERROR(error);
             return false;
         }
     }
@@ -442,7 +460,10 @@ ArgParser::parse(const int argc,
             ArgParser::ArgDefinition* argIdent = getArgument(currentArgument);
             if(argIdent == nullptr)
             {
-                LOG_ERROR("unknown argument: " + currentArgument);
+                ErrorContainer error;
+                error.errorMessage = "unknown argument: " + currentArgument;
+                error.possibleSolution = "-";
+                LOG_ERROR(error);
                 return false;
             }
 
@@ -451,7 +472,10 @@ ArgParser::parse(const int argc,
                 // check if there is a value for the identifier
                 if(i+1 == argc)
                 {
-                    LOG_ERROR("flag has no value: " + currentArgument);
+                    ErrorContainer error;
+                    error.errorMessage = "flag has no value: " + currentArgument;
+                    error.possibleSolution = "-";
+                    LOG_ERROR(error);
                     return false;
                 }
 
@@ -470,7 +494,10 @@ ArgParser::parse(const int argc,
                                                + "\n    given value: "
                                                + currentValue;
 
-                    LOG_ERROR(errMsg);
+                    ErrorContainer error;
+                    error.errorMessage = errMsg;
+                    error.possibleSolution = "-";
+                    LOG_ERROR(error);
                     return false;
                 }
 
@@ -508,7 +535,10 @@ ArgParser::parse(const int argc,
                                                        + "\n    given value: "
                                                        + currentArgument;
 
-                            LOG_ERROR(errMsg);
+                            ErrorContainer error;
+                            error.errorMessage = errMsg;
+                            error.possibleSolution = "-";
+                            LOG_ERROR(error);
                             return false;
                         }
 
@@ -534,8 +564,11 @@ ArgParser::parse(const int argc,
         if(m_argumentList[i].results->size() == 0
                 && m_argumentList[i].required)
         {
-            LOG_ERROR("argument is required but was not set: "
-                      + m_argumentList[i].longIdentifier);
+            ErrorContainer error;
+            error.errorMessage = "argument is required but was not set: "
+                                 + m_argumentList[i].longIdentifier;
+            error.possibleSolution = "-";
+            LOG_ERROR(error);
             return false;
         }
     }
