@@ -16,26 +16,33 @@ int main(int argc, char *argv[])
 
     Kitsunemimi::Args::ArgParser parser("0.1.0");
 
+    Kitsunemimi::ErrorContainer error;
+
     // register flags without value
     parser.registerPlain("debug,d",
-                         "debug-flag to enable addtional debug output");
+                         "debug-flag to enable addtional debug output",
+                         error);
     // "registerPlain" allows it to register flags without any value, which says only true or flase
     //                 if they were set or not set
 
     // register flags
     parser.registerString("source",
                           "source-path",
+                          error,
                           true);
     parser.registerInteger("input,i",
-                           "additional parameter");
+                           "additional parameter",
+                           error);
 
     // register other values
     parser.registerString("mode",
                           "modus for converting",
+                          error,
                           true,  // true to make it requried
                           true); // true to register this without a "--"-flag
     parser.registerString("destination",
                           "destination path for output",
+                          error,
                           true,
                           true);
     // register types:
@@ -44,7 +51,7 @@ int main(int argc, char *argv[])
     //     registerFloat
     //     registerBoolean
 
-    bool ret = parser.parse(argc, argv);
+    bool ret = parser.parse(argc, argv, error);
     if(ret == false) {
         return 1;
     }

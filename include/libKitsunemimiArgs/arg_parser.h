@@ -13,6 +13,7 @@
 #include <vector>
 #include <climits>
 #include <cstdlib>
+#include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi
 {
@@ -31,27 +32,36 @@ public:
 
     // register
     bool registerPlain(const std::string &identifier,
-                       const std::string &helpText);
+                       const std::string &helpText,
+                       ErrorContainer &error);
     bool registerString(const std::string &identifier,
                         const std::string &helpText,
+                        ErrorContainer &error,
                         bool required = false,
                         bool withoutFlag = false);
     bool registerInteger(const std::string &identifier,
                          const std::string &helpText,
+                         ErrorContainer &error,
                          bool required = false,
                          bool withoutFlag = false);
     bool registerFloat(const std::string &identifier,
                        const std::string &helpText,
+                       ErrorContainer &error,
                        bool required = false,
                        bool withoutFlag = false);
     bool registerBoolean(const std::string &identifier,
-                         const std::string &helpText,
+                         const std::string &helpTex,
+                         ErrorContainer &errort,
                          bool required = false,
                          bool withoutFlag = false);
 
     // parse
-    bool parse(const int argc, char *argv[]);
-    bool parse(const int argc, const char* argv[]);
+    bool parse(const int argc,
+               char *argv[],
+               ErrorContainer &error);
+    bool parse(const int argc,
+               const char* argv[],
+               ErrorContainer &error);
 
     // getter
     uint64_t getNumberOfValues(const std::string &identifier);
@@ -107,7 +117,8 @@ private:
                           const ArgType type,
                           bool required,
                           bool withoutFlag,
-                          bool hasValue);
+                          bool hasValue,
+                          ErrorContainer &error);
 
     DataItem* convertValue(const std::string &value,
                            const ArgType requiredType);

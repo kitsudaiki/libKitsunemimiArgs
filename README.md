@@ -64,24 +64,28 @@ HINT: The flags `--help` and `-h` for the help-output are hard coded and don't h
 ```cpp
 #include <libKitsunemimiArgs/arg_parser.h>
 #include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 
 int main(int argc, char *argv[])
 {
     // error messages of the parser are printed via logger
-    Kitsunemimi::Persistence::initConsoleLogger(true);
+    Kitsunemimi::initConsoleLogger(true);
     // with "initFileLogger" the error-message of the argument-parser can also be written into a file
 
     Kitsunemimi::Args::ArgParser parser("0.1.0");
+    Kitsunemimi::ErrorContainer error;
 
     // register flags without value
     parser.registerPlain("debug,d",
-                         "debug-flag to enable addtional debug output");
+                         "debug-flag to enable addtional debug output",
+                         error);
     // "registerPlain" allows it to register flags without any value, which says only true or flase
     //                 if they were set or not set
 
     // register flags
     parser.registerString("source",
                           "source-path",
+                          error,
                           true);
     parser.registerInteger("input,i",
                            "additional parameter");
@@ -89,10 +93,12 @@ int main(int argc, char *argv[])
     // register other values
     parser.registerString("mode",
                           "modus for converting",
+                          error,
                           true,  // true to make it requried
                           true); // true to register this without a "--"-flag
     parser.registerString("destination",
                           "destination path for output",
+                          error,
                           true,
                           true);
     // register types:
@@ -102,8 +108,10 @@ int main(int argc, char *argv[])
     //     registerBoolean
 
     // parse incoming arguments
-    bool ret = parser.parse(argc, argv);
-    if(ret == false) {
+    bool ret = parser.parse(argc, argv, error);
+    if(ret == false) 
+    {
+        LOG_ERROR(error);
         return 1;
     }
     // ret say, if the converting was successful or not. Error-message are written in the logger
