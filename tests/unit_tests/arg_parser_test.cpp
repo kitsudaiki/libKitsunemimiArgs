@@ -8,7 +8,7 @@
 
 #include "arg_parser_test.h"
 
-#include <libKitsunemimiCommon/common_items/data_items.h>
+#include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiArgs/arg_parser.h>
 
 namespace Kitsunemimi

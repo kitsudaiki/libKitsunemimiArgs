@@ -8,9 +8,9 @@
 
 #include <libKitsunemimiArgs/arg_parser.h>
 
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
-#include <libKitsunemimiCommon/common_items/data_items.h>
-#include <libKitsunemimiCommon/common_items/table_item.h>
+#include <libKitsunemimiCommon/methods/string_methods.h>
+#include <libKitsunemimiCommon/items/data_items.h>
+#include <libKitsunemimiCommon/items/table_item.h>
 
 #include <libKitsunemimiCommon/logger.h>
 
