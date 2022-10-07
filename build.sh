@@ -51,7 +51,7 @@ function get_required_kitsune_lib_repo () {
 
 #-----------------------------------------------------------------------------------------------------------------
 
-get_required_kitsune_lib_repo "libKitsunemimiCommon" "develop" 8 "staticlib"
+get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.27.1" 8 "staticlib"
 
 #-----------------------------------------------------------------------------------------------------------------
 
