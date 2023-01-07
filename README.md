@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     Kitsunemimi::initConsoleLogger(true);
     // with "initFileLogger" the error-message of the argument-parser can also be written into a file
 
-    Kitsunemimi::Args::ArgParser parser("0.1.0");
+    Kitsunemimi::ArgParser parser("0.1.0");
     Kitsunemimi::ErrorContainer error;
 
     // register flags without value
