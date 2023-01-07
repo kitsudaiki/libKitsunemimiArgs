@@ -16,8 +16,6 @@
 
 namespace Kitsunemimi
 {
-namespace Args
-{
 
 /**
  * @brief constructor
@@ -981,5 +979,4 @@ ArgParser::getArgument(const std::string &identifier)
     return nullptr;
 }
 
-}
 }

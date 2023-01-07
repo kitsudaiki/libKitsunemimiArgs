@@ -19,8 +19,6 @@ namespace Kitsunemimi
 {
 class DataItem;
 class DataArray;
-namespace Args
-{
 class ArgParser_Test;
 class SubCommand;
 
@@ -124,7 +122,6 @@ private:
                            const ArgType requiredType);
 };
 
-}
 }
 
 #endif // ARG_PARSER_H

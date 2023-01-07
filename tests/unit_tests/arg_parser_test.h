@@ -14,8 +14,6 @@
 
 namespace Kitsunemimi
 {
-namespace Args
-{
 class ArgParser;
 
 class ArgParser_Test
@@ -50,7 +48,6 @@ private:
     void prepareTest(ArgParser* parser);
 };
 
-}
 }
 
 #endif // ARG_PARSER_TEST_H

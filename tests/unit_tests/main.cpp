@@ -10,7 +10,7 @@
 
 int main()
 {
-    Kitsunemimi::Args::ArgParser_Test argParserTest;
+    Kitsunemimi::ArgParser_Test argParserTest;
 
     return 0;
 }

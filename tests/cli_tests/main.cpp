@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     // error messages of the parser are printed via logger
     Kitsunemimi::initConsoleLogger(true);
 
-    Kitsunemimi::Args::ArgParser parser("0.1.0");
+    Kitsunemimi::ArgParser parser("0.1.0");
 
     Kitsunemimi::ErrorContainer error;
 
