@@ -13,8 +13,6 @@
 
 namespace Kitsunemimi
 {
-namespace Args
-{
 
 ArgParser_Test::ArgParser_Test()
     : Kitsunemimi::CompareTestHelper("ArgParser_Test")
@@ -491,5 +489,4 @@ ArgParser_Test::prepareTest(ArgParser *parser)
     assert(parser->parse(argc, argv, error));
 }
 
-}
 }
